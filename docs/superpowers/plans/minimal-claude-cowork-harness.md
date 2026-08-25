@@ -20,7 +20,7 @@
 - Keep the plugin version only in `.claude-plugin/plugin.json`; every published content change must bump it.
 - Do not use `!` shell expansion, absolute paths, `${CLAUDE_PROJECT_DIR}`, or `${CLAUDE_SESSION_ID}` in the skill.
 - Keep native eval output under ignored `evals/results/`.
-- Claude Code 2.1.226 exposes `claude plugin eval`, but this account currently receives an early-access gate. Store native-format cases now; use the manual acceptance steps until access is enabled. Do not replace it with a custom eval framework.
+- Claude Code 2.1.245 exposes `claude plugin eval`, but this account currently receives an early-access gate. Store native-format cases now; use the manual acceptance steps until access is enabled. Do not replace it with a custom eval framework.
 - Cowork loads customizations enabled for the claude.ai account at session start; local `--plugin-dir` and `~/.claude/skills` are not Cowork delivery mechanisms.
 
 ---

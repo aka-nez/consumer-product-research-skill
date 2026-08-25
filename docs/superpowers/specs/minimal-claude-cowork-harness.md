@@ -96,7 +96,7 @@ A separate Quorum-style eval repository, container, scheduler, dashboard, creden
 
 ### Use Claude's native plugin-eval file layout
 
-Eval cases live under `evals/**/prompt.md` with Markdown graders under `graders/`. Claude Code 2.1.226 advertises `claude plugin eval`, including plugin/no-plugin ablation, multiple runs, cost ceilings, and HTML/JSON reports.
+Eval cases live under `evals/**/prompt.md` with Markdown graders under `graders/`. Claude Code 2.1.245 advertises `claude plugin eval`, including plugin/no-plugin ablation, multiple runs, cost ceilings, and HTML/JSON reports.
 
 The installed CLI currently reports that `plugin eval` is in early access for this account. The files should still use its native layout. Until access is enabled, the same prompts and criteria are run manually in Claude Code and Cowork. Do not build a replacement eval framework for this temporary gate.
 

@@ -1,0 +1,1 @@
+I live in Germany and need a quiet cordless stick vacuum for a 70 m² apartment with mostly hard floors and one cat. My hard budget limit is €450. I care more about low noise, easy maintenance, and reliable access to filters and batteries than maximum suction. Give me a short list and tell me which one to buy.
