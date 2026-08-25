@@ -11,11 +11,11 @@ Use constraints already present in the conversation. Before searching, obtain ev
 
 - exact product need and hard compatibility requirements;
 - maximum budget;
-- country and postal code or city;
+- country and city;
 - acceptable pickup radius;
 - delivery deadline or pickup deadline.
 
-Ask only for missing constraints. A country or broad region is not enough to prove local availability.
+Ask only for missing constraints. A city is sufficient for delivery research: never ask for or infer a postal code. A country or broad region without a city is not enough to prove local availability.
 
 ## Use Firecrawl
 
@@ -27,7 +27,7 @@ If `firecrawl_search`, `firecrawl_scrape`, or `firecrawl_interact` is unavailabl
 
 Search for suitable products sold by retailers serving the user's location:
 
-- include the product, city or postal code, and terms such as pickup, collect, delivery, or the local-language equivalents in the query;
+- include the product, city, and terms such as pickup, collect, delivery, or the local-language equivalents in the query;
 - set Firecrawl's `location` to the user's city and country;
 - search broadly first, then use `includeDomains` for promising retailer domains;
 - keep the result count small and relevant.
@@ -38,11 +38,11 @@ Treat Firecrawl search results, shopping aggregators, manufacturer dealer lists,
 
 Open the exact retailer URL with `firecrawl_scrape`. For inventory checks use fresh retrieval with `maxAge: 0` and `storeInCache: false`. Request markdown plus a screenshot when supported. Match the exact model, variant, size or capacity, color when relevant, and retailer SKU or manufacturer part number when shown.
 
-If availability depends on a location selector, variant selector, delivery form, or store picker, use `firecrawl_interact` to set the user's postal code or choose the specific store. Ask it to return the resulting availability text and capture the post-selection state. A pre-selection page is not proof.
+If availability depends on a location selector, variant selector, delivery form, or store picker, use `firecrawl_interact` to set the user's city when the retailer supports city input or choose the specific store. Never ask for or infer a postal code. If the retailer verifies delivery only after receiving a postal code, label that delivery route `UNVERIFIED`. Ask Firecrawl to return the resulting availability text and capture the post-selection state. A pre-selection page is not proof.
 
 For every recommended option, prove at least one fulfillment route:
 
-- **Delivery:** the retailer explicitly says the exact item can be delivered to the user's postal code and shows a delivery date, window, or current delivery promise.
+- **Delivery:** the retailer explicitly says the exact item can be delivered to the user's city and shows a delivery date, window, or current delivery promise.
 - **Pickup:** the retailer explicitly says the exact item is available for pickup at a named branch and shows a pickup date, window, or ready-for-pickup promise.
 
 Generic text such as “in stock,” “available online,” “ships,” or “check stores” is not proof. A cached response, search result, third-party marketplace, stock at an unspecified branch, or delivery to an unspecified destination is not proof. If Firecrawl cannot reach or operate the retailer's fulfillment controls, label the option `UNVERIFIED`.
@@ -51,7 +51,7 @@ For each verified route, record:
 
 - exact product and variant;
 - retailer;
-- named pickup branch and address, or delivery postal code;
+- named pickup branch and address, or delivery city;
 - fulfillment method;
 - the availability statement as shown;
 - promised date or window when shown;

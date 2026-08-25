@@ -55,7 +55,7 @@ Claude Code loads the repository as a plugin with `claude --plugin-dir .`; the p
 
 `skills/consumer-product-research/SKILL.md` is the only behavior source. Claude Code discovers it from the plugin. Cowork receives the same skill through account sync.
 
-Both harnesses expose the same Firecrawl MCP tool contract: `firecrawl_search` discovers retailer pages, `firecrawl_scrape` retrieves fresh exact-product evidence, and `firecrawl_interact` operates dynamic postcode and store selectors.
+Both harnesses expose the same Firecrawl MCP tool contract: `firecrawl_search` discovers retailer pages, `firecrawl_scrape` retrieves fresh exact-product evidence, and `firecrawl_interact` operates dynamic city and store selectors.
 
 ### Keep the plugin wrapper
 
@@ -110,15 +110,15 @@ The installed CLI currently reports that `plugin eval` is in early access for th
 The skill exists to find products that can actually be fulfilled for the user:
 
 1. Trigger for local product searches and recommendations that depend on delivery or pickup availability.
-2. Require country plus postal code or city, pickup radius, budget, and fulfillment deadline before checking stock.
+2. Require country and city, budget, and fulfillment deadline before checking stock; never ask for or infer a postal code.
 3. Require authenticated Firecrawl tools; stop if they are unavailable.
 4. Use `firecrawl_search` with the user's geographic location to discover retailer pages.
 5. Use search results and aggregators only as leads; never treat them as availability evidence.
 6. Use fresh `firecrawl_scrape` requests with `maxAge: 0` and `storeInCache: false` on the exact retailer product.
-7. Use `firecrawl_interact` when a postcode, variant, delivery, or store selector controls fulfillment state.
+7. Use `firecrawl_interact` when a city, variant, delivery, or store selector controls fulfillment state.
 8. Match the exact product and variant on the retailer's own current site.
 9. Verify delivery with a destination-specific promise, or pickup with a branch-specific ready date or window.
-10. Record the availability statement, branch/address or postal code, promise, price, direct URL, checked time, and captured post-selection evidence.
+10. Record the availability statement, branch/address or delivery city, promise, price, direct URL, checked time, and captured post-selection evidence.
 11. Label candidates `VERIFIED DELIVERY`, `VERIFIED PICKUP`, or `UNVERIFIED`, recommend only verified candidates, and report honestly when none can be proved.
 
 Generic “in stock,” unspecified-store stock, unspecified-destination shipping, snippets, dealer lists, and third-party marketplace claims are not proof.
@@ -127,7 +127,7 @@ Generic “in stock,” unspecified-store stock, unspecified-destination shippin
 
 ### Triggering case
 
-Prompt: a shopping request with a postal code, pickup radius, delivery/pickup deadline, and budget that does not mention skills or Superpowers.
+Prompt: a shopping request with a city, delivery/pickup deadline, and budget that does not mention skills or Superpowers and explicitly rejects postal-code questions.
 
 Pass when the plugin arm:
 
@@ -198,7 +198,8 @@ Add Firecrawl's hosted MCP endpoint as a Cowork custom connector using the accou
 - Installed plugin inventory lists one Firecrawl MCP server.
 - Claude Code lists `/consumer-product-research:consumer-product-research` when the checkout is loaded with `--plugin-dir .`.
 - Explicit invocation follows the workflow.
-- Every recommendation includes first-party, location-specific proof for delivery to the user's postal code or pickup at a named local branch.
+- Every recommendation includes first-party proof for delivery to the user's city or pickup at a named local branch.
+- The skill never asks for or infers a postal code; postal-code-only delivery checks remain `UNVERIFIED`.
 - Search snippets, generic stock labels, unspecified fulfillment, and unverified variants never qualify as proof.
 - A fresh Claude Code session automatically applies the skill to the triggering prompt.
 - A fresh Claude Code session does not apply the skill to the non-triggering prompt.
