@@ -100,34 +100,37 @@ Eval cases live under `evals/**/prompt.md` with Markdown graders under `graders/
 
 The installed CLI currently reports that `plugin eval` is in early access for this account. The files should still use its native layout. Until access is enabled, the same prompts and criteria are run manually in Claude Code and Cowork. Do not build a replacement eval framework for this temporary gate.
 
-## Initial skill contract
+## Current skill contract
 
-The first `SKILL.md` is a complete, small workflow:
+The skill exists to find products that can actually be fulfilled for the user:
 
-1. Use the skill for product recommendations, comparisons, shortlists, buying decisions, and verification of current product claims.
-2. Ask only for missing constraints that could change the recommendation; otherwise state reasonable assumptions and proceed.
-3. Research current candidates rather than relying on memory.
-4. Prefer manufacturer documentation for specifications and warranty, current retailers for price and availability, and independent sources for measured performance or reliability.
-5. Exclude candidates that violate hard constraints.
-6. Compare three to five viable finalists on decision-relevant criteria.
-7. Separate verified facts, source-reported observations, and inference.
-8. Recommend one primary choice and one alternative, with decisive tradeoffs, current pricing context, citations, and unverified points.
+1. Trigger for local product searches and recommendations that depend on delivery or pickup availability.
+2. Require country plus postal code or city, pickup radius, budget, and fulfillment deadline before checking stock.
+3. Use search results and aggregators only to discover retailer pages; never treat them as availability evidence.
+4. Match the exact product and variant on the retailer's own current site.
+5. Set the delivery postal code or select the named pickup branch before trusting availability.
+6. Verify delivery with a destination-specific promise, or pickup with a branch-specific ready date or window.
+7. Record the retailer's availability statement, branch/address or delivery postal code, promise, price, direct URL, and checked time.
+8. Label candidates `VERIFIED DELIVERY`, `VERIFIED PICKUP`, or `UNVERIFIED`, and recommend only verified candidates.
+9. If no option can be proved, report that honestly instead of converting missing evidence into an availability claim.
+
+Generic “in stock,” unspecified-store stock, unspecified-destination shipping, snippets, dealer lists, and third-party marketplace claims are not proof.
 
 ## Behavioral eval contract
 
 ### Triggering case
 
-Prompt: a realistic shopping request that does not mention research, skills, or Superpowers.
+Prompt: a shopping request with a postal code, pickup radius, delivery/pickup deadline, and budget that does not mention skills or Superpowers.
 
 Pass when the plugin arm:
 
-- invokes or clearly follows the consumer-product-research workflow;
-- gathers current evidence;
-- respects the user's hard constraints;
-- distinguishes source types and uncertainty;
-- produces a useful recommendation with citations.
+- invokes or clearly follows the availability-proof workflow;
+- recommends only exact products with location-specific first-party delivery or pickup evidence;
+- records the retailer, destination or branch, availability promise, price, URL, and checked time;
+- labels insufficiently supported candidates `UNVERIFIED`; and
+- reports no verified option when proof cannot be obtained.
 
-The no-plugin arm establishes whether the skill materially improves the result rather than merely producing a plausible answer.
+The no-plugin arm establishes whether the skill materially improves fulfillment verification rather than merely producing a plausible product list.
 
 ### Non-triggering case
 
@@ -182,6 +185,8 @@ The marketplace is the Claude Code and Desktop Code distribution channel. It doe
 - A local-scope marketplace registration and install succeeds, and `claude plugin details consumer-product-research@consumer-product-research-marketplace` lists the skill.
 - Claude Code lists `/consumer-product-research:consumer-product-research` when the checkout is loaded with `--plugin-dir .`.
 - Explicit invocation follows the workflow.
+- Every recommendation includes first-party, location-specific proof for delivery to the user's postal code or pickup at a named local branch.
+- Search snippets, generic stock labels, unspecified fulfillment, and unverified variants never qualify as proof.
 - A fresh Claude Code session automatically applies the skill to the triggering prompt.
 - A fresh Claude Code session does not apply the skill to the non-triggering prompt.
 - The exact same two prompts produce equivalent trigger/non-trigger behavior in a fresh Cowork session with the account-synced skill enabled.

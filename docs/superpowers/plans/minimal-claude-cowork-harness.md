@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/minimal-claude-cowork-harness.md`
 
+> **Behavior update:** The initial skill and grader bodies embedded below are historical. The current availability-proof contract in `docs/superpowers/specs/minimal-claude-cowork-harness.md`, `skills/consumer-product-research/SKILL.md`, and `evals/` supersedes them.
+
 ## Global Constraints
 
 - The repository is greenfield; introduce no convention beyond the files named in this plan.

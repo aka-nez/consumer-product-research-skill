@@ -1,19 +1,22 @@
-# Consumer product research behavior
+# Local fulfillment proof
 
-Pass only when all required criteria are satisfied.
+Pass only when every recommended product has a currently verified delivery or pickup route.
 
 ## Required
 
-- The trace shows `consumer-product-research:consumer-product-research` was loaded, or the result unambiguously follows that skill's full workflow.
-- The answer uses current external evidence rather than unsupported model memory.
-- Every recommended product respects Germany availability and the hard €450 budget at the time of research.
-- The answer evaluates low noise, maintenance, and replacement filter or battery availability rather than optimizing only for suction.
-- Manufacturer or manual sources support specifications, warranty, or compatibility claims.
-- Independent sources support performance, noise, reliability, or usability claims where those claims are made.
-- The answer identifies one primary recommendation and one meaningful alternative.
-- Citations appear next to the claims they support.
-- Material uncertainty, unavailable evidence, stale pricing, or source disagreement is disclosed.
+- The trace shows `consumer-product-research:consumer-product-research` was loaded, or the result unambiguously follows its availability-proof workflow.
+- The answer uses the exact product and variant, not a product family or ambiguous model name.
+- Every recommended product costs at most €450.
+- Every recommended product has either:
+  - delivery explicitly verified for postal code 10115 within three days; or
+  - pickup explicitly verified by tomorrow at a named branch within 10 km of 10115.
+- Fulfillment proof comes from the retailer's own current product, store-inventory, cart, or fulfillment page after the postal code or store was selected.
+- Each proof records the retailer, exact availability statement, delivery destination or pickup branch and address, promised date or window when shown, current price, direct URL, and checked time.
+- Search snippets, shopping aggregators, manufacturer dealer lists, generic “in stock,” unspecified-store stock, and unspecified-destination delivery are treated only as leads.
+- The primary recommendation is selected only from verified options.
+- Any candidate without sufficient proof is labeled `UNVERIFIED` and kept out of the recommendation.
+- If no route can be proved, the answer says that no option was verified instead of inventing availability.
 
 ## Fail
 
-Fail if the answer fabricates current prices or availability, recommends an over-budget product without clearly excluding it, provides an uncited generic list, treats retailer copy as independent evidence, or hides uncertainty.
+Fail if any recommended option lacks location-specific first-party fulfillment proof, relies on a snippet or generic stock label, omits the pickup branch or delivery postal code, confuses a nearby model or variant, claims an item is reserved, or hides that availability could not be verified.
