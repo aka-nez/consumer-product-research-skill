@@ -9,7 +9,7 @@ The skill does not treat search snippets, generic “in stock” labels, or unsp
 1. Collects the product requirements, budget, country, city, and delivery or pickup deadline.
 2. Uses `firecrawl_search` with the user's city and country to discover retailer pages.
 3. Uses fresh `firecrawl_scrape` requests on exact retailer product pages with caching disabled.
-4. Uses `firecrawl_interact` when a retailer requires a city, variant, delivery, or store selection.
+4. Uses `firecrawl_scrape` actions when a retailer requires a city, variant, delivery, or store selection.
 5. Records the retailer's resulting fulfillment statement, price, direct URL, checked time, and captured evidence.
 6. Recommends only products classified as `VERIFIED DELIVERY` or `VERIFIED PICKUP`.
 
@@ -41,23 +41,33 @@ If Firecrawl cannot reach or operate the retailer's fulfillment controls, the pr
 ## Requirements
 
 - Claude Code or Cowork
-- A [Firecrawl](https://firecrawl.dev/) API key
 - Access to this private GitHub repository
 
-The plugin connects to Firecrawl's hosted MCP endpoint. No local Firecrawl process, Node.js package, or API key file is required.
+The plugin uses Firecrawl's official keyless hosted MCP endpoint. Search and scrape work immediately with per-IP rate limits: no Firecrawl account, API key, local process, Node.js package, or secret file is required.
 
-## Install in Claude Code
+## Agent-first installation
 
-Register the marketplace and install the plugin:
+Point a Claude Code agent at this repository and say:
 
-```bash
-claude plugin marketplace add aka-nez/consumer-product-research-skill
-claude plugin install consumer-product-research@consumer-product-research-marketplace
+```text
+Install and configure this project. Follow INSTALL.md completely.
 ```
 
-Claude prompts for the required Firecrawl API key. Enter it only through the masked plugin configuration. The value is stored as sensitive user configuration; do not put it in this repository, project settings, shell commands, or issue text.
+The repository's `CLAUDE.md` directs the agent to `INSTALL.md`, and `scripts/install.sh` performs the complete Claude Code installation. The installer validates the checkout, registers the marketplace at user scope, replaces an older user-scoped copy, installs the plugin, and verifies that the skill and Firecrawl MCP server are present.
 
-Restart Claude Code after installation, then confirm the component inventory:
+The only expected user interaction is Claude Code's normal trust or MCP approval prompt.
+
+## Manual fallback
+
+If no agent is available, clone and run the same installer:
+
+```bash
+gh repo clone aka-nez/consumer-product-research-skill
+cd consumer-product-research-skill
+bash scripts/install.sh
+```
+
+Restart Claude Code after the installer succeeds. Confirm the inventory at any time:
 
 ```bash
 claude plugin details consumer-product-research@consumer-product-research-marketplace
@@ -65,20 +75,19 @@ claude plugin details consumer-product-research@consumer-product-research-market
 
 Expected inventory: one skill and one Firecrawl MCP server, with no agents, hooks, or LSP servers.
 
+The installer is idempotent. Pull repository updates and run it again to replace the installed copy.
+
 ## Configure Cowork
 
-Cowork does not read the local Claude Code plugin directory or local credentials.
+Cowork does not read a local Claude Code installation. Point the Cowork agent to this repository and tell it to follow `INSTALL.md`.
 
-1. Enable the `consumer-product-research` skill or plugin for the claude.ai account through **Customize**.
-2. Add Firecrawl as a custom connector using the hosted MCP URL format:
+The agent can configure the skill and this keyless Firecrawl custom connector when account customization controls are available:
 
-   ```text
-   https://mcp.firecrawl.dev/<your-firecrawl-api-key>/v2/mcp
-   ```
+```text
+https://mcp.firecrawl.dev/v2/mcp
+```
 
-3. Start a fresh Cowork session so the account-synced skill and connector load.
-
-Do not commit or share the connector URL after inserting the key.
+Claude may require the account owner to approve changes in **Customize**. That approval is the only platform-level step the repository cannot bypass. Start a fresh Cowork session afterward and verify that both the skill and Firecrawl tools are available.
 
 ## Use
 
@@ -98,7 +107,7 @@ The response should lead with the best verified option and include product, exac
 
 ## Safety boundaries
 
-The skill may operate retailer location, variant, delivery, store, and non-transactional cart controls to inspect availability. It must never:
+The skill may use Firecrawl scrape actions to operate retailer location, variant, delivery, store, and non-transactional cart controls while inspecting availability. It must never:
 
 - create an account;
 - enter payment details;
@@ -130,9 +139,12 @@ Generated eval reports belong under ignored `evals/results/`.
 ## Project structure
 
 ```text
-.claude-plugin/plugin.json       Plugin metadata and sensitive Firecrawl option
+.claude-plugin/plugin.json       Plugin metadata
 .claude-plugin/marketplace.json  Single-plugin marketplace catalog
-.mcp.json                        Hosted Firecrawl MCP connection
+.mcp.json                        Keyless hosted Firecrawl MCP connection
+CLAUDE.md                        Automatic repository instruction for Claude Code
+INSTALL.md                       Agent-executable installation contract
+scripts/install.sh               Idempotent user-scope installer
 skills/consumer-product-research/SKILL.md
 evals/                           Positive and negative behavior contracts
 docs/superpowers/                Architecture specification and implementation record

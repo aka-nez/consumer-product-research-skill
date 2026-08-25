@@ -21,7 +21,7 @@ Ask only for missing constraints. A city is sufficient for delivery research: ne
 
 Use the plugin's Firecrawl MCP server for web discovery and retailer verification. Do not substitute generic web-search snippets for Firecrawl evidence.
 
-If `firecrawl_search`, `firecrawl_scrape`, or `firecrawl_interact` is unavailable or unauthenticated, stop and tell the user that live availability cannot be verified until Firecrawl is configured.
+If `firecrawl_search` or `firecrawl_scrape` is unavailable or rate-limited, stop and tell the user that live availability could not be verified. Installation requires no Firecrawl account or API key.
 
 ## Discover candidates with `firecrawl_search`
 
@@ -38,7 +38,7 @@ Treat Firecrawl search results, shopping aggregators, manufacturer dealer lists,
 
 Open the exact retailer URL with `firecrawl_scrape`. For inventory checks use fresh retrieval with `maxAge: 0` and `storeInCache: false`. Request markdown plus a screenshot when supported. Match the exact model, variant, size or capacity, color when relevant, and retailer SKU or manufacturer part number when shown.
 
-If availability depends on a location selector, variant selector, delivery form, or store picker, use `firecrawl_interact` to set the user's city when the retailer supports city input or choose the specific store. Never ask for or infer a postal code. If the retailer verifies delivery only after receiving a postal code, label that delivery route `UNVERIFIED`. Ask Firecrawl to return the resulting availability text and capture the post-selection state. A pre-selection page is not proof.
+If availability depends on a location selector, variant selector, delivery form, or store picker, inspect the page and call `firecrawl_scrape` again with `actions` such as `click`, `write`, `press`, `wait`, and `screenshot` to set the user's city or choose the specific store. Never ask for or infer a postal code. If the retailer verifies delivery only after receiving a postal code, label that delivery route `UNVERIFIED`. Use the post-action scrape and screenshot as evidence; a pre-selection page is not proof.
 
 For every recommended option, prove at least one fulfillment route:
 

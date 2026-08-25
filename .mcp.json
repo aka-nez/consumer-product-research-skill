@@ -2,7 +2,7 @@
   "mcpServers": {
     "firecrawl": {
       "type": "http",
-      "url": "https://mcp.firecrawl.dev/${user_config.firecrawl_api_key}/v2/mcp"
+      "url": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }

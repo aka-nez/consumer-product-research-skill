@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/minimal-claude-cowork-harness.md`
 
-> **Superseded implementation record:** The initial no-MCP architecture, tool-neutral skill, and grader bodies embedded below are historical. The current Firecrawl-backed availability-proof contract in `docs/superpowers/specs/minimal-claude-cowork-harness.md`, `.mcp.json`, `skills/consumer-product-research/SKILL.md`, and `evals/` is authoritative.
+> **Superseded implementation record:** The initial no-MCP architecture, tool-neutral skill, and grader bodies embedded below are historical. The current keyless Firecrawl availability-proof contract and autonomous installer in `docs/superpowers/specs/minimal-claude-cowork-harness.md`, `.mcp.json`, `INSTALL.md`, `scripts/install.sh`, `skills/consumer-product-research/SKILL.md`, and `evals/` are authoritative.
 
 ## Global Constraints
 

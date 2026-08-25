@@ -2,18 +2,9 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "consumer-product-research",
   "displayName": "Consumer Product Research",
-  "version": "0.3.0",
-  "description": "Finds locally available products and proves delivery or pickup with Firecrawl.",
+  "version": "0.4.0",
+  "description": "Finds locally available products and proves delivery or pickup with zero-config Firecrawl.",
   "author": {
     "name": "Consumer Product Research Maintainers"
-  },
-  "userConfig": {
-    "firecrawl_api_key": {
-      "type": "string",
-      "title": "Firecrawl API key",
-      "description": "API key from firecrawl.dev for fresh search, scrape, and interaction requests.",
-      "sensitive": true,
-      "required": true
-    }
   }
 }
