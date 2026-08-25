@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "consumer-product-research",
+  "displayName": "Consumer Product Research",
+  "version": "0.1.0",
+  "description": "Researches and compares consumer products using current, cited evidence.",
+  "author": {
+    "name": "Consumer Product Research Maintainers"
+  }
+}
