@@ -1,6 +1,6 @@
 {
   "name": "consumer-product-research-marketplace",
-  "description": "Firecrawl-backed local product availability research for Claude.",
+  "description": "Zero-config Firecrawl-backed local product availability research for Claude.",
   "owner": {
     "name": "Consumer Product Research Maintainers"
   },
@@ -8,7 +8,7 @@
     {
       "name": "consumer-product-research",
       "source": "./",
-      "description": "Finds locally available products and proves delivery or pickup with Firecrawl."
+      "description": "Finds locally available products and proves delivery or pickup with zero-config Firecrawl."
     }
   ]
 }
