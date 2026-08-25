@@ -244,7 +244,7 @@ Expected: exit `0`; the catalog has one valid local source, its plugin manifest 
 Run:
 
 ```bash
-claude plugin marketplace add . --scope local
+claude plugin marketplace add ./ --scope local
 ```
 
 Expected: `consumer-product-research-marketplace` appears in `claude plugin marketplace list`.

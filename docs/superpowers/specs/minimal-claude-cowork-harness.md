@@ -162,7 +162,7 @@ claude plugin validate . --strict
 Register and install the local catalog at local scope:
 
 ```bash
-claude plugin marketplace add . --scope local
+claude plugin marketplace add ./ --scope local
 claude plugin install consumer-product-research@consumer-product-research-marketplace --scope local
 claude plugin details consumer-product-research@consumer-product-research-marketplace
 ```

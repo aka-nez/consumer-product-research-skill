@@ -1,0 +1,14 @@
+{
+  "name": "consumer-product-research-marketplace",
+  "description": "Consumer product research skills for Claude.",
+  "owner": {
+    "name": "Consumer Product Research Maintainers"
+  },
+  "plugins": [
+    {
+      "name": "consumer-product-research",
+      "source": "./",
+      "description": "Researches and compares consumer products using current, cited evidence."
+    }
+  ]
+}
