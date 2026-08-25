@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/minimal-claude-cowork-harness.md`
 
+> **Superseded implementation record:** The initial no-MCP architecture, tool-neutral skill, and grader bodies embedded below are historical. The current Firecrawl-backed availability-proof contract in `docs/superpowers/specs/minimal-claude-cowork-harness.md`, `.mcp.json`, `skills/consumer-product-research/SKILL.md`, and `evals/` is authoritative.
+
 ## Global Constraints
 
 - The repository is greenfield; introduce no convention beyond the files named in this plan.
@@ -381,7 +383,7 @@ claude plugin eval . \
   --runs 1 \
   --model sonnet \
   --judge-model haiku \
-  --allow-tools WebSearch WebFetch \
+  --allow-tools 'mcp__firecrawl__*' \
   --max-cost-usd 1 \
   --threshold 1 \
   --no-publish \
@@ -468,7 +470,7 @@ claude plugin eval . \
   --runs 3 \
   --model sonnet \
   --judge-model haiku \
-  --allow-tools WebSearch WebFetch \
+  --allow-tools 'mcp__firecrawl__*' \
   --max-cost-usd 5 \
   --threshold 0.67 \
   --no-publish \

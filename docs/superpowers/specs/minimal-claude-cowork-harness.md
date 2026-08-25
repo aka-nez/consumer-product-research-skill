@@ -11,6 +11,7 @@ The first release contains:
 - one Claude plugin manifest;
 - one co-located Claude plugin marketplace catalog;
 - one Agent Skill;
+- one hosted Firecrawl MCP connection configured through a required sensitive API-key option;
 - static validation with Claude Code's native plugin validator;
 - two behavioral eval cases stored in Claude Code's native eval layout;
 - a local Claude Code acceptance run;
@@ -25,6 +26,7 @@ consumer-product-research-skill/
 ├── .claude-plugin/
 │   ├── plugin.json
 │   └── marketplace.json
+├── .mcp.json
 ├── skills/
 │   └── consumer-product-research/
 │       └── SKILL.md
@@ -45,7 +47,7 @@ consumer-product-research-skill/
 └── .gitignore
 ```
 
-Claude Code loads the repository as a plugin with `claude --plugin-dir .`. Cowork does not read the local plugin directory or `~/.claude/skills`; it loads the skill or plugin enabled for the user's claude.ai account at session start.
+Claude Code loads the repository as a plugin with `claude --plugin-dir .`; the plugin connects to Firecrawl's hosted HTTP MCP server. Cowork does not read the local plugin directory or `~/.claude/skills`; it loads account-enabled customizations and must connect to the same hosted Firecrawl MCP endpoint.
 
 ## Design decisions
 
@@ -53,7 +55,7 @@ Claude Code loads the repository as a plugin with `claude --plugin-dir .`. Cowor
 
 `skills/consumer-product-research/SKILL.md` is the only behavior source. Claude Code discovers it from the plugin. Cowork receives the same skill through account sync.
 
-The skill describes actions rather than harness-specific tool names: search the web, inspect primary sources, compare evidence, and report uncertainty. This avoids separate Claude Code and Cowork variants.
+Both harnesses expose the same Firecrawl MCP tool contract: `firecrawl_search` discovers retailer pages, `firecrawl_scrape` retrieves fresh exact-product evidence, and `firecrawl_interact` operates dynamic city and store selectors.
 
 ### Keep the plugin wrapper
 
@@ -73,22 +75,25 @@ A startup bootstrap is necessary for Superpowers because it enforces a methodolo
 
 Cowork hook execution is not explicitly documented. Depending on a hook would therefore weaken the common Claude Code/Cowork contract and add always-on context cost. Add a hook only if behavioral evals later show that native triggering is inadequate.
 
-### Avoid Cowork-incompatible skill features
+### Use one hosted Firecrawl MCP backend
 
-The initial skill must not depend on:
+The root `.mcp.json` connects to `https://mcp.firecrawl.dev/<key>/v2/mcp` over HTTP. The plugin manifest declares `firecrawl_api_key` as required and sensitive, and `.mcp.json` substitutes `${user_config.firecrawl_api_key}` into the URL. No API key is committed to Git or written to project settings.
+
+Claude Code prompts for the key when the plugin is enabled and stores it in secure user configuration. Cowork must configure the same hosted Firecrawl endpoint as an account connector because it cannot inherit local plugin configuration or environment variables.
+
+The hosted transport avoids `npx`, a local MCP process, Node.js, and a runtime package dependency. If Firecrawl is missing or unauthenticated, the skill must stop rather than downgrade availability proof to generic search.
+
+The skill must not depend on:
 
 - `!` dynamic shell commands, which Cowork disables for user-supplied skills;
 - local absolute paths;
 - `${CLAUDE_PROJECT_DIR}` or `${CLAUDE_SESSION_ID}` substitutions;
-- an MCP server;
 - plugin executables;
 - subagents or a particular task-list tool.
 
-Built-in web research capabilities are sufficient for the first version. Add an MCP connector only when a required product data source cannot be reached reliably through normal web research.
-
 ### Use no build system or runtime dependencies
 
-The repository needs no `package.json`, lockfile, compiler, framework, server, or generated artifact. Claude Code consumes the JSON manifest and Markdown skill directly.
+The repository needs no `package.json`, lockfile, compiler, framework, local server, or generated artifact. Claude Code consumes the JSON manifests and Markdown skill directly and calls Firecrawl's hosted MCP service.
 
 ### Keep evals in this repository
 
@@ -100,34 +105,40 @@ Eval cases live under `evals/**/prompt.md` with Markdown graders under `graders/
 
 The installed CLI currently reports that `plugin eval` is in early access for this account. The files should still use its native layout. Until access is enabled, the same prompts and criteria are run manually in Claude Code and Cowork. Do not build a replacement eval framework for this temporary gate.
 
-## Initial skill contract
+## Current skill contract
 
-The first `SKILL.md` is a complete, small workflow:
+The skill exists to find products that can actually be fulfilled for the user:
 
-1. Use the skill for product recommendations, comparisons, shortlists, buying decisions, and verification of current product claims.
-2. Ask only for missing constraints that could change the recommendation; otherwise state reasonable assumptions and proceed.
-3. Research current candidates rather than relying on memory.
-4. Prefer manufacturer documentation for specifications and warranty, current retailers for price and availability, and independent sources for measured performance or reliability.
-5. Exclude candidates that violate hard constraints.
-6. Compare three to five viable finalists on decision-relevant criteria.
-7. Separate verified facts, source-reported observations, and inference.
-8. Recommend one primary choice and one alternative, with decisive tradeoffs, current pricing context, citations, and unverified points.
+1. Trigger for local product searches and recommendations that depend on delivery or pickup availability.
+2. Require country and city, budget, and fulfillment deadline before checking stock; never ask for or infer a postal code.
+3. Require authenticated Firecrawl tools; stop if they are unavailable.
+4. Use `firecrawl_search` with the user's geographic location to discover retailer pages.
+5. Use search results and aggregators only as leads; never treat them as availability evidence.
+6. Use fresh `firecrawl_scrape` requests with `maxAge: 0` and `storeInCache: false` on the exact retailer product.
+7. Use `firecrawl_interact` when a city, variant, delivery, or store selector controls fulfillment state.
+8. Match the exact product and variant on the retailer's own current site.
+9. Verify delivery with a destination-specific promise, or pickup with a branch-specific ready date or window.
+10. Record the availability statement, branch/address or delivery city, promise, price, direct URL, checked time, and captured post-selection evidence.
+11. Label candidates `VERIFIED DELIVERY`, `VERIFIED PICKUP`, or `UNVERIFIED`, recommend only verified candidates, and report honestly when none can be proved.
+
+Generic “in stock,” unspecified-store stock, unspecified-destination shipping, snippets, dealer lists, and third-party marketplace claims are not proof.
 
 ## Behavioral eval contract
 
 ### Triggering case
 
-Prompt: a realistic shopping request that does not mention research, skills, or Superpowers.
+Prompt: a shopping request with a city, delivery/pickup deadline, and budget that does not mention skills or Superpowers and explicitly rejects postal-code questions.
 
 Pass when the plugin arm:
 
-- invokes or clearly follows the consumer-product-research workflow;
-- gathers current evidence;
-- respects the user's hard constraints;
-- distinguishes source types and uncertainty;
-- produces a useful recommendation with citations.
+- invokes or clearly follows the availability-proof workflow;
+- uses Firecrawl search plus fresh scrape or interaction evidence in the trace;
+- recommends only exact products with location-specific first-party delivery or pickup evidence;
+- records the retailer, destination or branch, availability promise, price, URL, and checked time;
+- labels insufficiently supported candidates `UNVERIFIED`; and
+- reports no verified option when proof cannot be obtained.
 
-The no-plugin arm establishes whether the skill materially improves the result rather than merely producing a plausible answer.
+The no-plugin arm establishes whether the skill materially improves fulfillment verification rather than merely producing a plausible product list.
 
 ### Non-triggering case
 
@@ -167,23 +178,31 @@ claude plugin install consumer-product-research@consumer-product-research-market
 claude plugin details consumer-product-research@consumer-product-research-marketplace
 ```
 
+Installation prompts for the required Firecrawl API key. Enter it only through Claude's masked plugin configuration; do not place it in the repository, shell command, or project settings.
+
 The local-scope settings file is development state and remains untracked. After the repository has a GitHub origin, users register that `owner/repository` source and install the same namespaced plugin. No second marketplace repository or copied plugin tree is needed.
 
 ### Cowork development
 
 Cowork sessions load account-synced customizations rather than the local CLI directory. Enable the same skill for the test account through **Customize** in Claude Desktop or the skill settings on claude.ai, then start a fresh Cowork session.
 
-The marketplace is the Claude Code and Desktop Code distribution channel. It does not make a local installation available in Cowork: Cowork still requires the skill or plugin to be enabled for the claude.ai account. Organization-managed marketplace distribution remains a later option for Team or Enterprise deployment.
+Add Firecrawl's hosted MCP endpoint as a Cowork custom connector using the account's API key in the documented URL form `https://mcp.firecrawl.dev/<key>/v2/mcp`. The marketplace is the Claude Code and Desktop Code distribution channel; it does not transfer local plugin secrets into Cowork.
 
 ## Acceptance criteria
 
 - `claude plugin validate . --strict` succeeds without warnings.
 - `.claude-plugin/marketplace.json` exposes exactly one root plugin as `consumer-product-research@consumer-product-research-marketplace`.
 - A local-scope marketplace registration and install succeeds, and `claude plugin details consumer-product-research@consumer-product-research-marketplace` lists the skill.
+- `.mcp.json` declares exactly one hosted HTTP server named `firecrawl`.
+- The Firecrawl API key is a required sensitive `userConfig` value and is absent from tracked files.
+- Installed plugin inventory lists one Firecrawl MCP server.
 - Claude Code lists `/consumer-product-research:consumer-product-research` when the checkout is loaded with `--plugin-dir .`.
 - Explicit invocation follows the workflow.
+- Every recommendation includes first-party proof for delivery to the user's city or pickup at a named local branch.
+- The skill never asks for or infers a postal code; postal-code-only delivery checks remain `UNVERIFIED`.
+- Search snippets, generic stock labels, unspecified fulfillment, and unverified variants never qualify as proof.
 - A fresh Claude Code session automatically applies the skill to the triggering prompt.
 - A fresh Claude Code session does not apply the skill to the non-triggering prompt.
 - The exact same two prompts produce equivalent trigger/non-trigger behavior in a fresh Cowork session with the account-synced skill enabled.
-- The skill contains no shell expansion, local-path dependency, MCP dependency, executable, hook, or runtime package.
+- The skill contains no shell expansion, local-path dependency, executable, hook, or runtime package.
 - Eval outputs remain untracked under `evals/results/`.
