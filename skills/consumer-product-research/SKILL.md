@@ -1,6 +1,6 @@
 ---
 name: consumer-product-research
-description: Finds consumer products that are actually available from local retailers. Use when the user asks where to buy a product, what is in stock nearby, or wants a recommendation that must be available for delivery or pickup.
+description: Uses Firecrawl to find consumer products that are actually available from local retailers. Use when the user asks where to buy a product, what is in stock nearby, or wants a recommendation that must be available for delivery or pickup.
 ---
 
 # Consumer Product Research
@@ -17,20 +17,35 @@ Use constraints already present in the conversation. Before searching, obtain ev
 
 Ask only for missing constraints. A country or broad region is not enough to prove local availability.
 
-## Discover candidates
+## Use Firecrawl
 
-Search for suitable products sold by retailers serving the user's location. Treat search results, shopping aggregators, manufacturer dealer lists, and snippets only as leads. They are not proof of stock or fulfillment.
+Use the plugin's Firecrawl MCP server for web discovery and retailer verification. Do not substitute generic web-search snippets for Firecrawl evidence.
 
-## Prove availability
+If `firecrawl_search`, `firecrawl_scrape`, or `firecrawl_interact` is unavailable or unauthenticated, stop and tell the user that live availability cannot be verified until Firecrawl is configured.
 
-Verify the exact product on the retailer's own current site. Match the model, variant, size or capacity, color when relevant, and retailer SKU or manufacturer part number when shown.
+## Discover candidates with `firecrawl_search`
 
-Set the user's postal code or select the specific store before trusting availability. For every recommended option, prove at least one fulfillment route:
+Search for suitable products sold by retailers serving the user's location:
+
+- include the product, city or postal code, and terms such as pickup, collect, delivery, or the local-language equivalents in the query;
+- set Firecrawl's `location` to the user's city and country;
+- search broadly first, then use `includeDomains` for promising retailer domains;
+- keep the result count small and relevant.
+
+Treat Firecrawl search results, shopping aggregators, manufacturer dealer lists, and snippets only as leads. They are not proof of stock or fulfillment.
+
+## Prove availability with fresh retailer state
+
+Open the exact retailer URL with `firecrawl_scrape`. For inventory checks use fresh retrieval with `maxAge: 0` and `storeInCache: false`. Request markdown plus a screenshot when supported. Match the exact model, variant, size or capacity, color when relevant, and retailer SKU or manufacturer part number when shown.
+
+If availability depends on a location selector, variant selector, delivery form, or store picker, use `firecrawl_interact` to set the user's postal code or choose the specific store. Ask it to return the resulting availability text and capture the post-selection state. A pre-selection page is not proof.
+
+For every recommended option, prove at least one fulfillment route:
 
 - **Delivery:** the retailer explicitly says the exact item can be delivered to the user's postal code and shows a delivery date, window, or current delivery promise.
 - **Pickup:** the retailer explicitly says the exact item is available for pickup at a named branch and shows a pickup date, window, or ready-for-pickup promise.
 
-Generic text such as “in stock,” “available online,” “ships,” or “check stores” is not proof. A search snippet, cached result, third-party marketplace, stock at an unspecified branch, or delivery to an unspecified destination is not proof.
+Generic text such as “in stock,” “available online,” “ships,” or “check stores” is not proof. A cached response, search result, third-party marketplace, stock at an unspecified branch, or delivery to an unspecified destination is not proof. If Firecrawl cannot reach or operate the retailer's fulfillment controls, label the option `UNVERIFIED`.
 
 For each verified route, record:
 
@@ -42,6 +57,7 @@ For each verified route, record:
 - promised date or window when shown;
 - current price;
 - direct URL;
+- screenshot or captured post-selection evidence when Firecrawl returns it;
 - when the availability was checked.
 
 Use a retailer's location selector or non-transactional cart availability check when needed. Never create an account, enter payment details, place an order, or claim an item is reserved.
