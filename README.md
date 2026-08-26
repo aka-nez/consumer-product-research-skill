@@ -45,6 +45,8 @@ If Firecrawl cannot reach or operate the retailer's fulfillment controls, the pr
 
 The plugin uses Firecrawl's official keyless hosted MCP endpoint. Search and scrape work immediately with per-IP rate limits: no Firecrawl account, API key, local process, Node.js package, or secret file is required.
 
+Hitting the keyless rate limit is the expected reason to change this. Either send a Firecrawl API key as a bearer token to the same endpoint, or enable Firecrawl's connector from the Claude directory. Both need a Firecrawl account and bill your own plan, and both still serve the `firecrawl_search` and `firecrawl_scrape` tools the skill uses, so nothing in the skill changes. Enable one source at a time so the Firecrawl tools are not registered twice.
+
 ## Agent-first installation
 
 Give a Claude Code or Cowork agent this exact prompt:
