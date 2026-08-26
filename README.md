@@ -95,7 +95,7 @@ Cowork does not read a local Claude Code installation. Add this repository as a 
 
 Installing the plugin brings the Firecrawl connector with it, so there is no MCP URL to paste. Claude may require the account owner to approve changes in **Customize**; that approval is the only platform-level step the repository cannot bypass.
 
-To pick up a new release, re-sync the marketplace, install the current version, and start a fresh session. Cowork loads customizations at session start, and `plugin.json` must show a new version or the cached copy is kept.
+To pick up a new release, re-sync the marketplace from the **Plugins** tab, install the current version, and start a fresh session. If Cowork still reports the old version and calls it up to date, it is comparing against its own cached catalog: remove the marketplace and add it again, which replaces the cached copy because a marketplace name may only be registered once. `plugin.json` must also show a new version, or the cached plugin is kept.
 
 ## Use
 

@@ -38,7 +38,7 @@ When customization controls are available to you:
 3. Install `consumer-product-research` from that marketplace. Installing the plugin also brings its Firecrawl connector, so do not paste the MCP URL by hand.
 4. Start a fresh Cowork session and confirm the skill and Firecrawl tools are available.
 
-To update later, re-sync the marketplace, install the current version, and start a fresh session. `plugin.json` carries an explicit version, so an unchanged version leaves the cached copy in place.
+To update later, re-sync the marketplace, install the current version, and start a fresh session. If Cowork reports a stale version as up to date, it is reading its cached catalog: remove the marketplace and add it again, which replaces the cached copy because a marketplace name may only be registered once. `plugin.json` carries an explicit version, so an unchanged version also leaves the cached copy in place.
 
 If Claude requires an account-owner approval, ask only for that approval. Do not ask for an API key. Never claim Cowork installation succeeded until a fresh session exposes both the skill and Firecrawl tools.
 
