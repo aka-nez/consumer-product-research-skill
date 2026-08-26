@@ -1,6 +1,6 @@
 ---
 name: consumer-product-research
-description: Uses Firecrawl to find consumer products that are actually available from local retailers. Use when the user asks where to buy a product, what is in stock nearby, or wants a recommendation that must be available for delivery or pickup.
+description: Uses Firecrawl to find consumer products that are actually available from local retailers and saves the proof as a self-contained HTML report. Use when the user asks where to buy a product, what is in stock nearby, wants a recommendation that must be available for delivery or pickup, or asks to refresh a saved product availability report.
 ---
 
 # Consumer Product Research
@@ -70,6 +70,40 @@ Label each candidate as `VERIFIED DELIVERY`, `VERIFIED PICKUP`, or `UNVERIFIED`.
 
 If no candidate can be verified, say so plainly. Report what could not be checked and ask whether to expand the radius, deadline, budget, or product constraints. Never turn missing evidence into an availability claim.
 
+## Save the report
+
+Save each run as one self-contained HTML file named `product-research-<product-slug>.html` in the working folder, using a relative path. Inline all CSS; reference no external stylesheet, script, font, or build step. Claude Code leaves it on disk; Cowork lists it in the Artifacts pane, where it previews and downloads on every surface.
+
+Before saving, check for an existing file of that name. If one exists, continue it instead of starting over.
+
+Keep the report's state in one JSON island so later runs extend it without re-reading rendered prose:
+
+```html
+<script type="application/json" id="checks">
+[{"product":"","variant":"","sku":"","retailer":"","route":"VERIFIED PICKUP",
+  "branch":"","city":"","statement":"","promise":"","price":"","currency":"",
+  "url":"","evidence":"","checked":"2026-08-26T14:03Z"}]
+</script>
+```
+
+These fields are the proof record already required above; the island only serializes it. Append one record per check and never rewrite or drop an earlier one, so a superseded price or route stays as history.
+
+Render the page from the island:
+
+- newest record per product in the recommendation table, best verified option first;
+- `VERIFIED DELIVERY`, `VERIFIED PICKUP`, and `UNVERIFIED` as visually distinct badges;
+- every `checked` timestamp in full, with the oldest marked stale;
+- repeated checks of one product as a short price and route history;
+- unverified candidates in their own section, never in the recommendation table.
+
+State the run's constraints (need, budget, city, radius, deadline) at the top so the file reads on its own.
+
+## Refresh a report
+
+When asked to refresh, update, or re-check a saved report, read the file, take its constraints and candidates, and re-verify each against current retailer state under the same proof standard. Append the new checks and rewrite the page.
+
+Refreshing is research, not a data pull. A new price without a fresh destination- or branch-specific fulfillment promise is `UNVERIFIED`; never carry a badge forward.
+
 ## Return
 
-Lead with the best verified option. Include a compact table with product, price, retailer, fulfillment route, store or destination, availability promise, checked time, and evidence link. Then list any meaningful tradeoffs and any unverified alternatives separately.
+Lead with the best verified option: product, price, retailer, fulfillment route, store or destination, availability promise, and checked time. Note meaningful tradeoffs and unverified alternatives separately, and say where the report was saved. Keep the reply short; the report carries the detail.

@@ -1,6 +1,6 @@
 # Consumer Product Research
 
-A Claude skill that uses Firecrawl to find consumer products and prove that an exact product is currently available for delivery to a city or pickup at a named local store.
+A Claude skill that uses Firecrawl to find consumer products, prove that an exact product is currently available for delivery to a city or pickup at a named local store, and save that proof as a self-contained HTML report.
 
 The skill does not treat search snippets, generic “in stock” labels, or unspecified fulfillment as proof.
 
@@ -12,6 +12,7 @@ The skill does not treat search snippets, generic “in stock” labels, or unsp
 4. Uses `firecrawl_scrape` actions when a retailer requires a city, variant, delivery, or store selection.
 5. Records the retailer's resulting fulfillment statement, price, direct URL, checked time, and captured evidence.
 6. Recommends only products classified as `VERIFIED DELIVERY` or `VERIFIED PICKUP`.
+7. Saves the run as a self-contained HTML report that previews in the Cowork Artifacts pane and can be refreshed later.
 
 A city is sufficient for delivery research. The skill never asks for or infers a postal code. If a retailer verifies delivery only after receiving a postal code, that delivery route remains `UNVERIFIED`.
 
@@ -107,6 +108,10 @@ I live in Berlin, Germany, and need a quiet cordless vacuum under €450. I can 
 ```
 
 The response should lead with the best verified option and include product, exact variant, price, retailer, fulfillment route, delivery city or pickup branch, availability promise, checked time, and evidence link.
+
+The same run is saved as `product-research-<product-slug>.html` in the working folder. Cowork lists it in the Artifacts pane for preview and download; Claude Code leaves it on disk.
+
+Ask to refresh it later and the skill re-verifies each candidate under the same proof standard, appending new checks and keeping earlier ones as price and route history. For unattended updates, use Cowork's native `/schedule` on the refresh task.
 
 ## Safety boundaries
 

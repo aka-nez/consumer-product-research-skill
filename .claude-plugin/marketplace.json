@@ -8,7 +8,7 @@
     {
       "name": "consumer-product-research",
       "source": "./",
-      "description": "Finds locally available products and proves delivery or pickup with zero-config Firecrawl."
+      "description": "Finds locally available products, proves delivery or pickup with zero-config Firecrawl, and saves a refreshable HTML report."
     }
   ]
 }
