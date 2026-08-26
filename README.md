@@ -47,7 +47,7 @@ The plugin uses Firecrawl's official keyless hosted MCP endpoint. Search and scr
 
 Keyless is capped per IP per day by both request count and credits, and one availability run makes many scrapes. Firecrawl's own remedy is a free account, not a paid one: signing up costs nothing and raises you to 1,000 credits with higher per-minute limits. Create the [free Firecrawl account](https://firecrawl.link/3E5k7LF), then either send its API key as a bearer token to the same endpoint or enable Firecrawl's connector from the Claude directory. Both still serve the `firecrawl_search` and `firecrawl_scrape` tools the skill uses, so nothing in the skill changes. Enable one source at a time so the Firecrawl tools are not registered twice.
 
-That account link is a referral. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. It is the only referral link in this repository: the keyless endpoint above stays the default and needs no account, and the skill never emits referral links of any kind in its research or its reports.
+That account link is a referral, as is the one the agent shows after installation. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. Both places disclose it. The keyless endpoint above stays the default and needs no account, and the skill itself never emits referral links in its research or in the reports it saves.
 
 ## Agent-first installation
 
