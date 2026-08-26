@@ -41,21 +41,24 @@ If Firecrawl cannot reach or operate the retailer's fulfillment controls, the pr
 ## Requirements
 
 - Claude Code or Cowork
-- Access to this private GitHub repository
 
 The plugin uses Firecrawl's official keyless hosted MCP endpoint. Search and scrape work immediately with per-IP rate limits: no Firecrawl account, API key, local process, Node.js package, or secret file is required.
 
 ## Agent-first installation
 
-Point a Claude Code agent at this repository and say:
+Give a Claude Code or Cowork agent this exact prompt:
 
 ```text
-Install and configure this project. Follow INSTALL.md completely.
+Install and configure this project:
+https://github.com/aka-nez/consumer-product-research-skill
+
+Follow INSTALL.md completely:
+https://github.com/aka-nez/consumer-product-research-skill/blob/main/INSTALL.md
 ```
 
 The repository's `CLAUDE.md` directs the agent to `INSTALL.md`, and `scripts/install.sh` performs the complete Claude Code installation. The installer validates the checkout, registers the marketplace at user scope, replaces an older user-scoped copy, installs the plugin, and verifies that the skill and Firecrawl MCP server are present.
 
-The only expected user interaction is Claude Code's normal trust or MCP approval prompt.
+For Claude Code, the only expected user interaction is its normal trust or MCP approval prompt.
 
 ## Manual fallback
 
@@ -79,7 +82,7 @@ The installer is idempotent. Pull repository updates and run it again to replace
 
 ## Configure Cowork
 
-Cowork does not read a local Claude Code installation. Point the Cowork agent to this repository and tell it to follow `INSTALL.md`.
+Cowork does not read a local Claude Code installation. Use the exact linked prompt under **Agent-first installation**; `INSTALL.md` contains the Cowork setup path.
 
 The agent can configure the skill and this keyless Firecrawl custom connector when account customization controls are available:
 
