@@ -4,7 +4,7 @@ Install and configure this project completely when the user points you to this r
 
 ## Claude Code
 
-1. Obtain a local checkout of `aka-nez/consumer-product-research-skill` if this file is being read remotely. Use the authenticated GitHub CLI or Git; the repository is private.
+1. Obtain a local checkout of `aka-nez/consumer-product-research-skill` if this file is being read remotely. Use the GitHub CLI or Git; the repository is public.
 2. From the repository root, run:
 
    ```bash
@@ -24,18 +24,21 @@ Firecrawl uses the official keyless hosted MCP endpoint. Search and scrape work 
 
 ## Cowork
 
-Cowork account configuration is controlled by Claude's **Customize** UI and cannot be changed by repository files alone.
+Cowork consumes this repository as a plugin marketplace. Adding a marketplace is a **Customize** action that repository files cannot perform.
 
 When customization controls are available to you:
 
-1. Enable the `consumer-product-research` skill or plugin for the account.
-2. Add this keyless Firecrawl custom connector:
+1. Open the **Cowork** tab, then open **Customize** in the left sidebar.
+2. On the **Plugins** tab, under **Personal plugins**, click **+**, choose **Add marketplace**, then **Add from a repository**, and sync:
 
    ```text
-   https://mcp.firecrawl.dev/v2/mcp
+   https://github.com/aka-nez/consumer-product-research-skill
    ```
 
-3. Start a fresh Cowork session and confirm the skill and Firecrawl connector are available.
+3. Install `consumer-product-research` from that marketplace. Installing the plugin also brings its Firecrawl connector, so do not paste the MCP URL by hand.
+4. Start a fresh Cowork session and confirm the skill and Firecrawl tools are available.
+
+To update later, re-sync the marketplace, install the current version, and start a fresh session. `plugin.json` carries an explicit version, so an unchanged version leaves the cached copy in place.
 
 If Claude requires an account-owner approval, ask only for that approval. Do not ask for an API key. Never claim Cowork installation succeeded until a fresh session exposes both the skill and Firecrawl tools.
 

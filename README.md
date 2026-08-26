@@ -87,15 +87,15 @@ The installer is idempotent. Pull repository updates and run it again to replace
 
 ## Configure Cowork
 
-Cowork does not read a local Claude Code installation. Use the exact linked prompt under **Agent-first installation**; `INSTALL.md` contains the Cowork setup path.
+Cowork does not read a local Claude Code installation. Add this repository as a plugin marketplace instead:
 
-The agent can configure the skill and this keyless Firecrawl custom connector when account customization controls are available:
+1. Open the **Cowork** tab, then **Customize** in the left sidebar.
+2. On the **Plugins** tab, under **Personal plugins**, click **+** → **Add marketplace** → **Add from a repository**, and sync `https://github.com/aka-nez/consumer-product-research-skill`.
+3. Install **Consumer Product Research** from it, then start a fresh Cowork session.
 
-```text
-https://mcp.firecrawl.dev/v2/mcp
-```
+Installing the plugin brings the Firecrawl connector with it, so there is no MCP URL to paste. Claude may require the account owner to approve changes in **Customize**; that approval is the only platform-level step the repository cannot bypass.
 
-Claude may require the account owner to approve changes in **Customize**. That approval is the only platform-level step the repository cannot bypass. Start a fresh Cowork session afterward and verify that both the skill and Firecrawl tools are available.
+To pick up a new release, re-sync the marketplace, install the current version, and start a fresh session. Cowork loads customizations at session start, and `plugin.json` must show a new version or the cached copy is kept.
 
 ## Use
 
