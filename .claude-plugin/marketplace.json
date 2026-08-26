@@ -2,7 +2,7 @@
   "name": "consumer-product-research-marketplace",
   "description": "Zero-config Firecrawl-backed local product availability research for Claude.",
   "owner": {
-    "name": "Consumer Product Research Maintainers"
+    "name": "Viacheslav Nepomniashchikh"
   },
   "plugins": [
     {

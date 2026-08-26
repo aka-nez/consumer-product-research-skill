@@ -5,6 +5,6 @@
   "version": "0.4.0",
   "description": "Finds locally available products and proves delivery or pickup with zero-config Firecrawl.",
   "author": {
-    "name": "Consumer Product Research Maintainers"
+    "name": "Viacheslav Nepomniashchikh"
   }
 }
