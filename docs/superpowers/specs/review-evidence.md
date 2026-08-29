@@ -61,12 +61,21 @@ Measured 2026-08-29 from a server context, one video with published English capt
 | `youtubetotranscript.com` | Cloudflare interstitial; also blocks a real headless browser |
 | Invidious `api/v1/captions` (`inv.nadeko.net`) | lists tracks including auto-generated, track body zero bytes |
 | Piped `pipedapi.kavin.rocks` | `502` |
-| Headless Chromium, in-page fetch of the player response | no `captionTracks` present |
+| Signed `baseUrl` scraped from the watch-page HTML, plain GET | `200`, zero bytes, with and without `lang` and `fmt`; deleting its `exp=xpe` breaks the signature and returns `404` |
+| `yt-dlp`, same machine and IP | **transcript text retrieved**, real timed VTT cues |
 | `r.jina.ai` reader | page metadata only, no transcript |
 
-No free transcript endpoint is dependable, so the design does not add one. Adding a transcript service, API key, or self-hosted mirror would put a second credential and a second failure mode into a plugin whose whole install story is one signed-in connector.
+Captions are not IP-blocked here: `yt-dlp` pulled real cues from this exact machine. The blocker is the shape of the request. `yt-dlp` first POSTs to `youtubei/v1/player` as a non-web client, observed as the visionOS player, and the caption URL that response carries is then fetchable with an ordinary GET. The URL embedded in the web watch page is a different, neutered one: it carries `exp=xpe`, is PO-token gated, and returns an empty body to every parameter combination tried.
 
-The skill instead asks Firecrawl for the video page, since Firecrawl already runs a browser behind its own proxies and is the one fetcher in the plugin that may pass where the routes above fail. Then:
+That distinction decides the feature. The plugin's only fetcher is `firecrawl_scrape`, which retrieves a URL. It cannot issue the client-spoofed POST that produces a working caption URL, so scraping the watch page and following its caption link cannot work. Adding `yt-dlp`, a transcript service, or a self-hosted mirror would put an executable or a second credential into a plugin whose entire install story is one signed-in connector, and Cowork runs no shell at all.
+
+Three routes remain, none of them verified, all of them inside Firecrawl:
+
+1. `firecrawl_scrape` on the watch page, if Firecrawl's own browser surfaces transcript text that a plain fetch does not;
+2. scrape `actions` that click YouTube's "Show transcript" control, which did not render in headless Chromium here;
+3. `firecrawl_interact`, the live-page tool on the authenticated tool surface, which is the only Firecrawl capability that drives a page rather than fetching it.
+
+The probe tests those three in that order, cheapest first. Whatever it finds:
 
 - **transcript text returned:** derive pros and cons from it, exactly as from an article;
 - **no transcript text:** record the video as a lead with channel, title, date, and link, and derive nothing.

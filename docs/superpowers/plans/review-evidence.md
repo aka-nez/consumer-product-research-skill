@@ -40,17 +40,19 @@ The only unproven part of the design. Everything downstream branches on the resu
 
 **Files:** none; this task produces a finding recorded in the spec.
 
-- [ ] **Step 1: Pick three current video reviews** in different channels for one product that has published captions on YouTube.
+Known before starting, from probes on 2026-08-29: captions are not IP-blocked, `yt-dlp` retrieved real cues from a plain server. The working request is a client-spoofed POST to `youtubei/v1/player` followed by a GET of the caption URL it returns. The watch page's own caption URL is PO-token gated and returns an empty body. `firecrawl_scrape` cannot issue that POST, so this probe is only about whether Firecrawl's browser-side capabilities reach the transcript another way.
 
-- [ ] **Step 2: Scrape each watch page** with `firecrawl_scrape`, `maxAge: 0`, `storeInCache: false`, markdown output.
+- [ ] **Step 1: Pick one video review** with published English captions, confirmed by opening the watch page and seeing the transcript control.
 
-Record for each: whether the response contains spoken-word transcript text as opposed to title, description, and chrome only.
+- [ ] **Step 2: Route A, plain scrape.** `firecrawl_scrape` the watch page with `maxAge: 0`, `storeInCache: false`, markdown and rawHtml. Record whether spoken-word text appears, as opposed to title, description, and chrome.
 
-- [ ] **Step 3: If no transcript text appears, retry one video** with Firecrawl's stealth proxy option and, separately, with a scrape `actions` sequence that clicks the description expander and the "Show transcript" control before reading.
+- [ ] **Step 3: Route B, scrape actions.** Repeat with an `actions` sequence: `wait`, `click` the description expander, `click` the "Show transcript" control, `wait`, `screenshot`. Record whether the transcript panel's text is in the result. Note that this control did not render in headless Chromium during design probing, so a failure here is expected rather than surprising.
 
-- [ ] **Step 4: Record the outcome** in `docs/superpowers/specs/review-evidence.md` under the transcript section, with the date and the exact call shape that worked or failed.
+- [ ] **Step 4: Route C, `firecrawl_interact`.** Only if A and B fail. This is the one Firecrawl tool that drives a live page rather than fetching it. Record the credit cost alongside the outcome; a route that costs more than the availability proof it supports is not worth shipping.
 
-**Verification:** the spec states, from an observed run, whether transcripts are obtainable and by which call. No behavior is written before this line exists.
+- [ ] **Step 5: Record the outcome** in `docs/superpowers/specs/review-evidence.md`, with the date, the exact call shape, and the per-video credit cost of whichever route worked.
+
+**Verification:** the spec names, from an observed run, which of A, B, or C returns transcript text and at what cost, or states that none do.
 
 **Branch:** transcripts obtainable → Task 2 includes the working call shape. Transcripts unobtainable → Task 2 implements only the cited-lead path for video, and written reviews carry the block. Either way Task 3 onward is unchanged.
 
