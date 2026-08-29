@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "consumer-product-research",
   "displayName": "Consumer Product Research",
-  "version": "0.5.6",
-  "description": "Finds locally available products, proves delivery or pickup with zero-config Firecrawl, and saves a refreshable HTML report.",
+  "version": "0.6.0",
+  "description": "Finds locally available products, proves delivery or pickup with your signed-in Firecrawl account, and saves a refreshable HTML report.",
   "author": {
     "name": "Viacheslav Nepomniashchikh"
   }

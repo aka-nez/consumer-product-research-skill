@@ -42,60 +42,28 @@ If Firecrawl cannot reach or operate the retailer's fulfillment controls, the pr
 ## Requirements
 
 - Claude Code or Cowork
+- a Firecrawl account, free tier is enough
 
-The plugin uses Firecrawl's official keyless hosted MCP endpoint. Search and scrape work immediately with per-IP rate limits: no Firecrawl account, API key, local process, Node.js package, or secret file is required.
+The plugin connects to Firecrawl's hosted MCP endpoint at `https://mcp.firecrawl.dev/v2/mcp-oauth`. The first session opens a browser sign-in; the connection then runs on your own Firecrawl account and its limits. No API key, local process, Node.js package, or secret file is involved, because the OAuth flow holds the credential.
 
-Keyless is capped per IP per day by both request count and credits, and one availability run makes many scrapes. Firecrawl's own remedy is a free account, not a paid one: signing up costs nothing and raises you to 1,000 credits with higher per-minute limits. Create the [free Firecrawl account](https://firecrawl.link/3E5k7LF), then either send its API key as a bearer token to the same endpoint or enable Firecrawl's connector from the Claude directory. Both still serve the `firecrawl_search` and `firecrawl_scrape` tools the skill uses, so nothing in the skill changes. Enable one source at a time so the Firecrawl tools are not registered twice.
+One availability run makes many scrapes, so it needs an account's allowance behind it: [create a free Firecrawl account](https://firecrawl.link/3E5k7LF) for 1,000 credits and higher per-minute limits at no cost.
 
-That account link is a referral, as is the one the agent shows after installation. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. Both places disclose it. The keyless endpoint above stays the default and needs no account, and the skill itself never emits referral links in its research or in the reports it saves.
+That link is a referral. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. The skill itself never emits referral links in its research or in the reports it saves.
 
-## Agent-first installation
+## Install
 
-Give a Claude Code or Cowork agent this exact prompt:
+In Claude Code:
 
 ```text
-Install and configure this project:
-https://github.com/aka-nez/consumer-product-research-skill
-
-Follow INSTALL.md completely:
-https://github.com/aka-nez/consumer-product-research-skill/blob/main/INSTALL.md
+/plugin marketplace add aka-nez/consumer-product-research-skill
+/plugin install consumer-product-research@consumer-product-research-marketplace
 ```
 
-The repository's `CLAUDE.md` directs the agent to `INSTALL.md`, and `scripts/install.sh` performs the complete Claude Code installation. The installer validates the checkout, registers the marketplace at user scope, replaces an older user-scoped copy, installs the plugin, and verifies that the skill and Firecrawl MCP server are present.
+In Cowork, open **Customize** → **Plugins**, add the same repository as a marketplace under **Personal plugins**, and install **Consumer Product Research** from it.
 
-For Claude Code, the only expected user interaction is its normal trust or MCP approval prompt.
+Either way, the plugin brings its Firecrawl connector with it, so there is no MCP URL to paste. Complete the Firecrawl sign-in once, from `/mcp` in Claude Code or the connector prompt in Cowork, then start a fresh session.
 
-## Manual fallback
-
-If no agent is available, clone and run the same installer:
-
-```bash
-gh repo clone aka-nez/consumer-product-research-skill
-cd consumer-product-research-skill
-bash scripts/install.sh
-```
-
-Restart Claude Code after the installer succeeds. Confirm the inventory at any time:
-
-```bash
-claude plugin details consumer-product-research@consumer-product-research-marketplace
-```
-
-Expected inventory: one skill and one Firecrawl MCP server, with no agents, hooks, or LSP servers.
-
-The installer is idempotent. Pull repository updates and run it again to replace the installed copy.
-
-## Configure Cowork
-
-Cowork does not read a local Claude Code installation. Add this repository as a plugin marketplace instead:
-
-1. Open the **Cowork** tab, then **Customize** in the left sidebar.
-2. On the **Plugins** tab, under **Personal plugins**, click **+** → **Add marketplace** → **Add from a repository**, and sync `https://github.com/aka-nez/consumer-product-research-skill`.
-3. Install **Consumer Product Research** from it, then start a fresh Cowork session.
-
-Installing the plugin brings the Firecrawl connector with it, so there is no MCP URL to paste. Claude may require the account owner to approve changes in **Customize**; that approval is the only platform-level step the repository cannot bypass.
-
-To pick up a new release, re-sync the marketplace from the **Plugins** tab, install the current version, and start a fresh session. If Cowork still reports the old version and calls it up to date, it is comparing against its own cached catalog: remove the marketplace and add it again, which replaces the cached copy because a marketplace name may only be registered once. `plugin.json` must also show a new version, or the cached plugin is kept.
+To pick up a new release, update the marketplace and reinstall. Cowork compares against its own cached catalog: if it calls a stale version up to date, remove the marketplace and add it again, which replaces the cached copy because a marketplace name may only be registered once.
 
 ## Use
 
@@ -154,10 +122,7 @@ Generated eval reports belong under ignored `evals/results/`.
 ```text
 .claude-plugin/plugin.json       Plugin metadata
 .claude-plugin/marketplace.json  Single-plugin marketplace catalog
-.mcp.json                        Keyless hosted Firecrawl MCP connection
-CLAUDE.md                        Automatic repository instruction for Claude Code
-INSTALL.md                       Agent-executable installation contract
-scripts/install.sh               Idempotent user-scope installer
+.mcp.json                        Authenticated hosted Firecrawl MCP connection
 skills/consumer-product-research/SKILL.md
 evals/                           Positive and negative behavior contracts
 docs/superpowers/                Architecture specification and implementation record

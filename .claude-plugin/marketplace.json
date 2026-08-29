@@ -1,6 +1,6 @@
 {
   "name": "consumer-product-research-marketplace",
-  "description": "Zero-config Firecrawl-backed local product availability research for Claude.",
+  "description": "Firecrawl-backed local product availability research for Claude, on your own Firecrawl account.",
   "owner": {
     "name": "Viacheslav Nepomniashchikh"
   },
@@ -8,7 +8,7 @@
     {
       "name": "consumer-product-research",
       "source": "./",
-      "description": "Finds locally available products, proves delivery or pickup with zero-config Firecrawl, and saves a refreshable HTML report."
+      "description": "Finds locally available products, proves delivery or pickup with your signed-in Firecrawl account, and saves a refreshable HTML report."
     }
   ]
 }

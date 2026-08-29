@@ -21,7 +21,7 @@ Restate the resulting specification before searching, and carry it into candidat
 
 Use the plugin's Firecrawl MCP server for web discovery and retailer verification. Do not substitute generic web-search snippets for Firecrawl evidence.
 
-If `firecrawl_search` or `firecrawl_scrape` is unavailable or rate-limited, stop and tell the user that live availability could not be verified. Installation requires no Firecrawl account or API key.
+If `firecrawl_search` or `firecrawl_scrape` is unavailable, not signed in, or rate-limited, stop and tell the user that live availability could not be verified, naming which of those it was.
 
 ## Discover candidates with `firecrawl_search`
 
