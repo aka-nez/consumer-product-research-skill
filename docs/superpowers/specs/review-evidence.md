@@ -63,26 +63,41 @@ Measured 2026-08-29 from a server context, one video with published English capt
 | Piped `pipedapi.kavin.rocks` | `502` |
 | Signed `baseUrl` scraped from the watch-page HTML, plain GET | `200`, zero bytes, with and without `lang` and `fmt`; deleting its `exp=xpe` breaks the signature and returns `404` |
 | `yt-dlp`, same machine and IP | **transcript text retrieved**, real timed VTT cues |
+| Same recipe as two plain HTTP calls, no `yt-dlp` | **transcript text retrieved**, 4017 bytes of VTT |
+| Same recipe as in-page `fetch` from a `youtube.com` page | **transcript text retrieved**, identical 4017 bytes |
 | `r.jina.ai` reader | page metadata only, no transcript |
 
 Captions are not IP-blocked here: `yt-dlp` pulled real cues from this exact machine. The blocker is the shape of the request. `yt-dlp` first POSTs to `youtubei/v1/player` as a non-web client, observed as the visionOS player, and the caption URL that response carries is then fetchable with an ordinary GET. The URL embedded in the web watch page is a different, neutered one: it carries `exp=xpe`, is PO-token gated, and returns an empty body to every parameter combination tried.
 
-That distinction decides the feature. The plugin's only fetcher is `firecrawl_scrape`, which retrieves a URL. It cannot issue the client-spoofed POST that produces a working caption URL, so scraping the watch page and following its caption link cannot work. Adding `yt-dlp`, a transcript service, or a self-hosted mirror would put an executable or a second credential into a plugin whose entire install story is one signed-in connector, and Cowork runs no shell at all.
+That distinction is the whole mechanism, and it is reproducible without `yt-dlp`: POST `youtubei/v1/player` with the visionOS client context, read `captions.playerCaptionsTracklistRenderer.captionTracks`, then GET that track's `baseUrl` with `&fmt=vtt`. Two requests, no key, no third party, no binary. The same two calls run as in-page `fetch` from any `youtube.com` document return the identical transcript, and same-origin means no CORS obstacle.
 
-Three routes remain, none of them verified, all of them inside Firecrawl:
+`firecrawl_scrape` accepts an `executeJavascript` action and returns its value in `javascriptReturns`, so the plugin can run exactly that pair inside a Firecrawl browser session. One scrape call, pointed at a trivial same-origin document rather than a heavy watch page:
 
-1. `firecrawl_scrape` on the watch page, if Firecrawl's own browser surfaces transcript text that a plain fetch does not;
-2. scrape `actions` that click YouTube's "Show transcript" control, which did not render in headless Chromium here;
-3. `firecrawl_interact`, the live-page tool on the authenticated tool surface, which is the only Firecrawl capability that drives a page rather than fetching it.
+```text
+firecrawl_scrape(
+  url: "https://www.youtube.com/robots.txt",
+  actions: [{ type: "executeJavascript", script: <POST player, GET caption track, return VTT> }],
+  maxAge: 0, storeInCache: false)
+→ javascriptReturns[0]
+```
 
-The probe tests those three in that order, cheapest first. Whatever it finds:
+One unknown remains, and it is narrow: whether the Firecrawl **MCP** tool exposes the `executeJavascript` action and surfaces `javascriptReturns`, as the HTTP API does. That is a single call to settle, and it is what the probe now tests.
 
-- **transcript text returned:** derive pros and cons from it, exactly as from an article;
+### The compliance question this raises
+
+The working recipe spoofs a client against an undocumented internal endpoint. `yt-dlp` does the same and is widely used, but it is not a supported interface and it is contrary to YouTube's terms. YouTube's official Data API offers no substitute: `captions.download` requires the video owner's authorization, so there is no sanctioned way for a third party to read another channel's transcript.
+
+That is a maintainer's decision, not a technical one, and shipping it in a published plugin is a different act from running it locally. The options:
+
+1. **Ship it.** Video reviews become first-class evidence. Accept an unofficial dependency that can break whenever YouTube changes the gate, and the terms question with it.
+2. **Leave it out.** Written reviews carry the block, videos are cited as leads with no derived bullets, and the feature has no unofficial surface at all.
+
+Option 2 is the default until the maintainer chooses otherwise. Either way:
+
+- **transcript text available:** derive pros and cons from it, exactly as from an article;
 - **no transcript text:** record the video as a lead with channel, title, date, and link, and derive nothing.
 
 A video is never summarized from its title, its description, or search-result text. That is the existing rule against turning missing evidence into a claim, applied to a new surface.
-
-Whether Firecrawl passes is the one unproven assumption in this design. It is resolved by a probe before any behavior is written, and the fallback is a supported outcome rather than a broken feature: written reviews carry the block on their own.
 
 ## Untrusted content
 

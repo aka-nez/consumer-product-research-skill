@@ -40,21 +40,19 @@ The only unproven part of the design. Everything downstream branches on the resu
 
 **Files:** none; this task produces a finding recorded in the spec.
 
-Known before starting, from probes on 2026-08-29: captions are not IP-blocked, `yt-dlp` retrieved real cues from a plain server. The working request is a client-spoofed POST to `youtubei/v1/player` followed by a GET of the caption URL it returns. The watch page's own caption URL is PO-token gated and returns an empty body. `firecrawl_scrape` cannot issue that POST, so this probe is only about whether Firecrawl's browser-side capabilities reach the transcript another way.
+Proven on 2026-08-29, so the probe is no longer open-ended. POST `youtubei/v1/player` with the visionOS client context, then GET the returned track's `baseUrl` with `&fmt=vtt`, yields real cues: verified as two plain HTTP calls and again as in-page `fetch` from a `youtube.com` document, 4017 bytes both times. The Firecrawl HTTP API accepts an `executeJavascript` action and returns `javascriptReturns`, so one scrape call can run that pair.
 
-- [ ] **Step 1: Pick one video review** with published English captions, confirmed by opening the watch page and seeing the transcript control.
+- [ ] **Step 1: Decide whether to ship the recipe at all.** It spoofs a client against an undocumented endpoint, which is contrary to YouTube's terms, and the official Data API cannot substitute because `captions.download` requires the video owner's authorization. Maintainer's call, recorded in the spec before any code. Declining is a supported outcome: written reviews carry the block.
 
-- [ ] **Step 2: Route A, plain scrape.** `firecrawl_scrape` the watch page with `maxAge: 0`, `storeInCache: false`, markdown and rawHtml. Record whether spoken-word text appears, as opposed to title, description, and chrome.
+- [ ] **Step 2: Only if shipping.** Confirm the Firecrawl MCP tool exposes what the HTTP API does: one `firecrawl_scrape` on `https://www.youtube.com/robots.txt` with an `executeJavascript` action, checking that the response carries `javascriptReturns`.
 
-- [ ] **Step 3: Route B, scrape actions.** Repeat with an `actions` sequence: `wait`, `click` the description expander, `click` the "Show transcript" control, `wait`, `screenshot`. Record whether the transcript panel's text is in the result. Note that this control did not render in headless Chromium during design probing, so a failure here is expected rather than surprising.
+- [ ] **Step 3: Run it on three real review videos** in different channels, including one with only auto-generated captions, and record the per-call credit cost and whether cues come back for each.
 
-- [ ] **Step 4: Route C, `firecrawl_interact`.** Only if A and B fail. This is the one Firecrawl tool that drives a live page rather than fetching it. Record the credit cost alongside the outcome; a route that costs more than the availability proof it supports is not worth shipping.
+- [ ] **Step 4: Record the outcome** in `docs/superpowers/specs/review-evidence.md` with the date, the exact call, and the cost.
 
-- [ ] **Step 5: Record the outcome** in `docs/superpowers/specs/review-evidence.md`, with the date, the exact call shape, and the per-video credit cost of whichever route worked.
+**Verification:** the spec records the maintainer's decision and, if shipping, an observed transcript from a real review video with its credit cost.
 
-**Verification:** the spec names, from an observed run, which of A, B, or C returns transcript text and at what cost, or states that none do.
-
-**Branch:** transcripts obtainable → Task 2 includes the working call shape. Transcripts unobtainable → Task 2 implements only the cited-lead path for video, and written reviews carry the block. Either way Task 3 onward is unchanged.
+**Branch:** declined or MCP does not expose the action → Task 2 implements only the cited-lead path for video. Otherwise Task 2 includes the call shape. Task 3 onward is unchanged either way.
 
 ---
 
