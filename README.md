@@ -12,7 +12,8 @@ The skill does not treat search snippets, generic “in stock” labels, or unsp
 4. Uses `firecrawl_interact` when a retailer requires a city, variant, delivery, or store selection.
 5. Records the retailer's resulting fulfillment statement, price, direct URL, checked time, and captured evidence.
 6. Recommends only products classified as `VERIFIED DELIVERY` or `VERIFIED PICKUP`.
-7. Saves the run as a self-contained HTML report that previews in the Cowork Artifacts pane and can be refreshed later.
+7. Weighs reviews on that verified shortlist, reading YouTube transcripts through `youtubetotranscript.com`, and records pros and cons with one source link each.
+8. Saves the run as a self-contained HTML report that previews in the Cowork Artifacts pane and can be refreshed later.
 
 A city is sufficient for delivery research. The skill never asks for or infers a postal code. If a retailer verifies delivery only after receiving a postal code, that delivery route remains `UNVERIFIED`.
 
@@ -115,6 +116,7 @@ Behavior cases live under `evals/`:
 
 - `triggering-product-research` checks Firecrawl-backed city-level fulfillment proof;
 - `underspecified-request-questions` checks that a bare category request gets category-deciding questions, not just budget and deadline;
+- `review-evidence-attribution` checks that review bullets are sourced and never promote an unverified product;
 - `non-triggering-writing-task` checks that unrelated writing does not trigger product research.
 
 Generated eval reports belong under ignored `evals/results/`.

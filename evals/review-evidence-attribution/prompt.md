@@ -1,0 +1,1 @@
+I'm in Sofia, Bulgaria and want a 77 inch OLED TV for a bright living room, mostly films and PS5, up to 8000 BGN, delivered within two weeks. Two or three models will fit that budget, so tell me which one is actually better to live with, not just which one is in stock. Show me what the reviewers found and where you got it.

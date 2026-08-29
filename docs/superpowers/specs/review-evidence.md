@@ -81,11 +81,13 @@ firecrawl_scrape(
 → javascriptReturns[0]
 ```
 
-That is settled, and the answer is no. Verified 2026-08-29 against the hosted MCP server, `firecrawl-fastmcp` 3.24.1: `firecrawl_scrape` exposes no `actions` parameter. Its source gates the parameter on `SAFE_MODE`, which is set from the `CLOUD_SERVICE` deployment flag, not from authentication, so signing in does not restore it. The raw HTTP API is a different story: `POST /v2/scrape` with an `executeJavascript` action returned the transcript through Firecrawl, keyless, on the first correct attempt.
+That is settled, and the answer is no. Verified 2026-08-29 against the hosted MCP server, `firecrawl-fastmcp` 3.24.1: `firecrawl_scrape` exposes no `actions` parameter. Its source gates the parameter on `SAFE_MODE`, set from the `CLOUD_SERVICE` deployment flag rather than from authentication, so signing in does not restore it. The raw HTTP API accepts the action and returned the transcript, but the skill may only call the MCP tool.
 
-So the recipe works through Firecrawl but not through the tool the skill is allowed to call. What remains is `firecrawl_interact`, registered unconditionally in that same source and absent from the keyless surface only because keyless is entitled to `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse`. It executes clicks, form input, and scripts in a live session, so it is the one hosted tool that can run the recipe. Its presence on an authenticated connection is the single remaining check, and it is one `tools/list` call.
+**So the shipped path is `youtubetotranscript.com`, and it is opportunistic rather than dependable.** One `firecrawl_scrape` of `https://youtubetotranscript.com/transcript?youtube_url=<watch URL>`, called through the MCP tool itself on 2026-08-29, returned the full spoken transcript with the video title, channel, and subscriber count. Firecrawl clears the site's Cloudflare gate, which held off a stealth-patched headless browser here, at one credit and with no `actions`, no `firecrawl_interact`, and no client spoofing.
 
-If it is absent, the fallback is `firecrawl_scrape` on `youtubetotranscript.com`, a plain fetch needing no actions at all, which Firecrawl may reach through the enhanced proxies its default `auto` mode already escalates to, at the same one credit. Unproven here: that site's Cloudflare gate held off a stealth-patched headless browser for 30s+ with an empty body.
+Measured the same day, it succeeded for one heavily-cached video and failed for two real review videos, each retried twice within the minute. The failure is the site's own: "Oops! YouTube Blocked Us This Time. YouTube's blocking is random." That page still renders the video title and player, so it must be recognised as a failure rather than read as content, and an immediate retry does not clear it.
+
+The consequence is a ranking, not a blocker: written reviews carry the pros and cons, and a video contributes when its transcript happens to come back. The InnerTube recipe stays documented above as the fallback, proven at the HTTP layer but unreachable from the MCP tool surface. Nothing in the skill pins a YouTube client string, so nothing in the skill rots when YouTube changes one.
 
 ### The compliance question this raises
 

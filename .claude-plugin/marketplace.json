@@ -8,7 +8,7 @@
     {
       "name": "consumer-product-research",
       "source": "./",
-      "description": "Finds locally available products, proves delivery or pickup with your signed-in Firecrawl account, and saves a refreshable HTML report."
+      "description": "Finds locally available products, proves delivery or pickup with your signed-in Firecrawl account, weighs sourced reviews, and saves a refreshable HTML report."
     }
   ]
 }

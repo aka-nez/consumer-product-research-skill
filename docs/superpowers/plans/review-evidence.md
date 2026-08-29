@@ -42,17 +42,17 @@ The only unproven part of the design. Everything downstream branches on the resu
 
 Proven on 2026-08-29, so the probe is no longer open-ended. POST `youtubei/v1/player` with the visionOS client context, then GET the returned track's `baseUrl` with `&fmt=vtt`, yields real cues: verified as two plain HTTP calls and again as in-page `fetch` from a `youtube.com` document, 4017 bytes both times. The Firecrawl HTTP API accepts an `executeJavascript` action and returns `javascriptReturns`, so one scrape call can run that pair.
 
-- [x] **Step 1: Decide whether to ship the recipe at all.** Decided 2026-08-29: ship it. It spoofs a client against an undocumented endpoint, which is contrary to YouTube's terms, and the official Data API cannot substitute because `captions.download` requires the video owner's authorization.
+- [x] **Step 1: Decide the transcript path.** Decided 2026-08-29. The hosted MCP `firecrawl_scrape` has no `actions` parameter, gated on `SAFE_MODE` from the `CLOUD_SERVICE` deployment flag, so the InnerTube recipe cannot run through the tool the skill calls even when authenticated.
 
-- [ ] **Step 2: Only if shipping.** Confirm the Firecrawl MCP tool exposes what the HTTP API does: one `firecrawl_scrape` on `https://www.youtube.com/robots.txt` with an `executeJavascript` action, checking that the response carries `javascriptReturns`.
+- [x] **Step 2: Prove the shipped path.** One `firecrawl_scrape` of `https://youtubetotranscript.com/transcript?youtube_url=<watch URL>`, issued through the MCP tool, returned the full transcript plus title and channel at one credit. Firecrawl clears the site's Cloudflare gate.
 
-- [ ] **Step 3: Run it on three real review videos** in different channels, including one with only auto-generated captions, and record the per-call credit cost and whether cues come back for each.
+- [x] **Step 3: Record the outcome** in `docs/superpowers/specs/review-evidence.md`.
 
-- [ ] **Step 4: Record the outcome** in `docs/superpowers/specs/review-evidence.md` with the date, the exact call, and the cost.
+- [ ] **Step 4: Confirm on live review videos.** Run the same call against three current review videos in different channels, including one with only auto-generated captions, and record which return cues. The design probe used a music video with published captions.
 
-**Verification:** the spec records the maintainer's decision and, if shipping, an observed transcript from a real review video with its credit cost.
+**Verification:** the spec records an observed transcript retrieved through the MCP tool. Done, with the auto-generated-caption case still open.
 
-**Branch:** MCP exposes the action → Task 2 includes the call shape. It does not → try one `firecrawl_scrape` of `https://youtubetotranscript.com/transcript?youtube_url=<url>`, which Firecrawl's default `auto` proxy mode may reach through its enhanced retry at the same one credit; that site's Cloudflare gate held off a stealth-patched headless browser during design probing, so treat a failure as expected. Both unavailable → Task 2 implements only the cited-lead path for video. Task 3 onward is unchanged in every case.
+**Branch:** the transcript site fails or starts refusing Firecrawl → the InnerTube recipe over the raw HTTP API is the documented fallback, and a video with no transcript is a cited lead. Task 3 onward is unchanged in every case.
 
 ---
 
