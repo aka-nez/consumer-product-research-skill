@@ -7,7 +7,7 @@ Pass only when every recommended product has a currently verified delivery or pi
 - The trace shows `consumer-product-research:consumer-product-research` was loaded, or the result unambiguously follows its availability-proof workflow.
 - The trace uses Firecrawl `firecrawl_search` for discovery.
 - The trace uses fresh `firecrawl_scrape` requests with `maxAge: 0` and `storeInCache: false` for retailer evidence.
-- When fulfillment depends on a city or store selector, the trace uses `firecrawl_scrape` actions and evidence comes from the resulting post-action state.
+- When fulfillment depends on a city or store selector, the trace uses `firecrawl_interact` and evidence comes from the resulting post-selection state, or the route is labeled `UNVERIFIED` because that tool is unavailable.
 - The answer uses the exact product and variant, not a product family or ambiguous model name.
 - Every recommended product costs at most €450.
 - Every recommended product has either:

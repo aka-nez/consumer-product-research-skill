@@ -56,7 +56,7 @@ Claude Code can load the checkout directly for development. Users install the pu
 
 `skills/consumer-product-research/SKILL.md` is the only behavior source. Claude Code discovers it from the plugin. Cowork receives the same skill through account sync.
 
-Both harnesses expose the same Firecrawl MCP tool contract: `firecrawl_search` discovers retailer pages, and `firecrawl_scrape` retrieves fresh exact-product evidence and operates dynamic city or store controls through scrape actions.
+Both harnesses expose the same Firecrawl MCP tool contract: `firecrawl_search` discovers retailer pages, `firecrawl_scrape` retrieves fresh exact-product evidence, and `firecrawl_interact` operates dynamic city or store controls.
 
 ### Keep the plugin wrapper
 
@@ -82,7 +82,7 @@ The root `.mcp.json` connects to `https://mcp.firecrawl.dev/v2/mcp-oauth` over H
 
 An unauthenticated connection is not an option. One availability run makes many scrapes, and exhausting an allowance mid-run leaves every candidate `UNVERIFIED`, which is a failed run rather than a degraded one.
 
-Dynamic retailer controls use `firecrawl_scrape` actions such as click, write, press, wait, and screenshot. If Firecrawl is unavailable or rate-limited, the skill must stop rather than downgrade availability proof to generic search, and must hand back the fix for that specific failure instead of only the failure.
+Dynamic retailer controls use `firecrawl_interact`, not scrape actions: the hosted server sets `SAFE_MODE` from its `CLOUD_SERVICE` deployment flag and omits the `actions` parameter from `firecrawl_scrape` entirely, for authenticated and keyless connections alike. If Firecrawl is unavailable or rate-limited, the skill must stop rather than downgrade availability proof to generic search, and must hand back the fix for that specific failure instead of only the failure.
 
 The hosted transport avoids `npx`, a local MCP process, Node.js, and runtime package dependencies.
 
@@ -118,7 +118,7 @@ The skill exists to find products that can actually be fulfilled for the user:
 4. Use `firecrawl_search` with the user's geographic location to discover retailer pages.
 5. Use search results and aggregators only as leads; never treat them as availability evidence.
 6. Use fresh `firecrawl_scrape` requests with `maxAge: 0` and `storeInCache: false` on the exact retailer product.
-7. Use `firecrawl_scrape` actions when a city, variant, delivery, or store selector controls fulfillment state.
+7. Use `firecrawl_interact` when a city, variant, delivery, or store selector controls fulfillment state; label the route `UNVERIFIED` when that tool is unavailable.
 8. Match the exact product and variant on the retailer's own current site.
 9. Verify delivery with a destination-specific promise, or pickup with a branch-specific ready date or window.
 10. Record the availability statement, branch/address or delivery city, promise, price, direct URL, checked time, and captured post-selection evidence.

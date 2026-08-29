@@ -81,9 +81,11 @@ firecrawl_scrape(
 → javascriptReturns[0]
 ```
 
-One unknown remains, and it is narrow: whether the Firecrawl **MCP** tool exposes the `executeJavascript` action and surfaces `javascriptReturns`, as the HTTP API does. That is a single call to settle, and it is what the probe now tests.
+That is settled, and the answer is no. Verified 2026-08-29 against the hosted MCP server, `firecrawl-fastmcp` 3.24.1: `firecrawl_scrape` exposes no `actions` parameter. Its source gates the parameter on `SAFE_MODE`, which is set from the `CLOUD_SERVICE` deployment flag, not from authentication, so signing in does not restore it. The raw HTTP API is a different story: `POST /v2/scrape` with an `executeJavascript` action returned the transcript through Firecrawl, keyless, on the first correct attempt.
 
-If it does not, the documented fallback is `firecrawl_scrape` on `youtubetotranscript.com`, which Firecrawl may reach with the enhanced proxies its default `auto` mode already escalates to, at the same one credit per request. It is second choice on evidence, not on principle: unproven here, four hops instead of two, dependent on a free service that is itself fighting both YouTube and scrapers, and its Cloudflare challenge is an explicit refusal of automated access. A sibling site already answers "YouTube is currently blocking us from fetching subtitles."
+So the recipe works through Firecrawl but not through the tool the skill is allowed to call. What remains is `firecrawl_interact`, registered unconditionally in that same source and absent from the keyless surface only because keyless is entitled to `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse`. It executes clicks, form input, and scripts in a live session, so it is the one hosted tool that can run the recipe. Its presence on an authenticated connection is the single remaining check, and it is one `tools/list` call.
+
+If it is absent, the fallback is `firecrawl_scrape` on `youtubetotranscript.com`, a plain fetch needing no actions at all, which Firecrawl may reach through the enhanced proxies its default `auto` mode already escalates to, at the same one credit. Unproven here: that site's Cloudflare gate held off a stealth-patched headless browser for 30s+ with an empty body.
 
 ### The compliance question this raises
 

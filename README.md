@@ -9,7 +9,7 @@ The skill does not treat search snippets, generic “in stock” labels, or unsp
 1. Works out what actually decides the pick in that category, asks about those attributes plus budget, city, and deadline in one round, and states a default for each.
 2. Uses `firecrawl_search` with the user's city and country to discover retailer pages.
 3. Uses fresh `firecrawl_scrape` requests on exact retailer product pages with caching disabled.
-4. Uses `firecrawl_scrape` actions when a retailer requires a city, variant, delivery, or store selection.
+4. Uses `firecrawl_interact` when a retailer requires a city, variant, delivery, or store selection.
 5. Records the retailer's resulting fulfillment statement, price, direct URL, checked time, and captured evidence.
 6. Recommends only products classified as `VERIFIED DELIVERY` or `VERIFIED PICKUP`.
 7. Saves the run as a self-contained HTML report that previews in the Cowork Artifacts pane and can be refreshed later.
@@ -89,7 +89,7 @@ Ask to refresh it later and the skill re-verifies each candidate under the same 
 
 ## Safety boundaries
 
-The skill may use Firecrawl scrape actions to operate retailer location, variant, delivery, store, and non-transactional cart controls while inspecting availability. It must never:
+The skill may operate retailer location, variant, delivery, store, and non-transactional cart controls through Firecrawl while inspecting availability. It must never:
 
 - create an account;
 - enter payment details;
