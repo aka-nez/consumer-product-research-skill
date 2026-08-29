@@ -48,7 +48,7 @@ The plugin connects to Firecrawl's hosted MCP endpoint at `https://mcp.firecrawl
 
 One availability run makes many scrapes, so it needs an account's allowance behind it: [create a free Firecrawl account](https://firecrawl.link/3E5k7LF) for 1,000 credits and higher per-minute limits at no cost.
 
-That link is a referral. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. The skill itself never emits referral links in its research or in the reports it saves.
+That link is a referral. Signing up free costs you nothing and earns this project nothing; only a later paid Firecrawl plan pays a commission. The skill repeats the link, with the same disclosure, only when an unauthenticated Firecrawl connection blocks a run: never in its research findings and never in the reports it saves.
 
 ## Install
 

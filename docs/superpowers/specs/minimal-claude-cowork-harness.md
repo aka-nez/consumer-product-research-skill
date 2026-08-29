@@ -82,7 +82,7 @@ The root `.mcp.json` connects to `https://mcp.firecrawl.dev/v2/mcp-oauth` over H
 
 An unauthenticated connection is not an option. One availability run makes many scrapes, and exhausting an allowance mid-run leaves every candidate `UNVERIFIED`, which is a failed run rather than a degraded one.
 
-Dynamic retailer controls use `firecrawl_scrape` actions such as click, write, press, wait, and screenshot. If Firecrawl is unavailable or rate-limited, the skill must stop rather than downgrade availability proof to generic search.
+Dynamic retailer controls use `firecrawl_scrape` actions such as click, write, press, wait, and screenshot. If Firecrawl is unavailable or rate-limited, the skill must stop rather than downgrade availability proof to generic search, and must hand back the fix for that specific failure instead of only the failure.
 
 The hosted transport avoids `npx`, a local MCP process, Node.js, and runtime package dependencies.
 
@@ -114,7 +114,7 @@ The skill exists to find products that can actually be fulfilled for the user:
 
 1. Trigger for local product searches and recommendations that depend on delivery or pickup availability.
 2. Require country and city, budget, and fulfillment deadline before checking stock; never ask for or infer a postal code.
-3. Require Firecrawl search and scrape tools; stop if they are unavailable or rate-limited.
+3. Require Firecrawl search and scrape tools; on failure, stop and return the matching remedy: sign in for an unauthenticated or rate-limited connection, with the disclosed free-signup link when the user has no account; a reset notice for a spent account allowance; a connector check for missing tools.
 4. Use `firecrawl_search` with the user's geographic location to discover retailer pages.
 5. Use search results and aggregators only as leads; never treat them as availability evidence.
 6. Use fresh `firecrawl_scrape` requests with `maxAge: 0` and `storeInCache: false` on the exact retailer product.
