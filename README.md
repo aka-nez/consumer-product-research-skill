@@ -63,6 +63,8 @@ In Cowork, open **Customize** → **Plugins**, add the same repository as a mark
 
 Either way, the plugin brings its Firecrawl connector with it, so there is no MCP URL to paste. Complete the Firecrawl sign-in once, from `/mcp` in Claude Code or the connector prompt in Cowork, then start a fresh session.
 
+Do not substitute Firecrawl's connector from the Claude directory. That listing points at `https://mcp.firecrawl.dev/v2/mcp-search` and serves `firecrawl_search` plus research tools, with no `firecrawl_scrape`. Availability proof is a fresh scrape of the retailer's own page, so on that connector every candidate ends up `UNVERIFIED`. Run one Firecrawl connection, not both, or the tools register twice.
+
 To pick up a new release, update the marketplace and reinstall. Cowork compares against its own cached catalog: if it calls a stale version up to date, remove the marketplace and add it again, which replaces the cached copy because a marketplace name may only be registered once.
 
 ## Use

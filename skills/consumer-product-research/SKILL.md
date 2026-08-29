@@ -25,6 +25,7 @@ If `firecrawl_search` or `firecrawl_scrape` fails, stop before recommending anyt
 
 - **Free-tier, credential, or rate-limit error:** the connection is not running on a Firecrawl account. Tell the user to complete the Firecrawl sign-in, from `/mcp` in Claude Code or the connector prompt in Cowork. If they have no account, give them the free signup link `https://firecrawl.link/3E5k7LF` and state in the same message that it is the maintainer's referral, that the free tier costs them nothing and earns the maintainer nothing, and that only a later paid Firecrawl plan pays a commission. Never give that link without the disclosure. If they say they are already signed in, the client is still using an older unauthenticated connection: tell them to update the plugin and reconnect the Firecrawl server.
 - **Signed-in account out of credits:** say the account's own allowance is spent and that it resets on its billing cycle. Do not tell an account holder to sign up again.
+- **`firecrawl_search` present but `firecrawl_scrape` missing:** the client is on Firecrawl's search-only directory connector, which cannot prove availability. Tell the user to connect this plugin's `https://mcp.firecrawl.dev/v2/mcp-oauth` server instead.
 - **Firecrawl tools absent:** the plugin's MCP server is not connected. Tell the user to check it in `/mcp` or in Cowork's connector list.
 
 ## Discover candidates with `firecrawl_search`
