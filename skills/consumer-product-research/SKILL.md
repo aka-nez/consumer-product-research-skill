@@ -5,17 +5,17 @@ description: Uses Firecrawl to find consumer products that are actually availabl
 
 # Consumer Product Research
 
-## Get the fulfillment constraints
+## Get the constraints
 
-Use constraints already present in the conversation. Before searching, obtain every fact needed to test fulfillment:
+Use constraints already present in the conversation, then ask for what is missing. Two kinds are required before searching, and the first is the one that decides the shortlist.
 
-- exact product need and hard compatibility requirements;
-- maximum budget;
-- country and city;
-- acceptable pickup radius;
-- delivery deadline or pickup deadline.
+**What makes a good pick in this category.** A category name plus a size is not a specification. Before asking anything, name the three to six attributes that actually separate a good pick from a bad one here, given how the user will use the thing, and ask about the ones the conversation has not already answered. For a TV: room brightness and viewing distance, panel technology, content sources, console or PC gaming and its refresh-rate and HDMI requirements, and whether external audio is planned. For a laptop: workload, OS, screen, battery life, ports. Derive the equivalent set for whatever is asked; never fall back to budget and deadline alone. If the category is unfamiliar, scrape one large retailer's category page and read its filter facets: those are the attributes the market itself sorts on.
 
-Ask only for missing constraints. A city is sufficient for delivery research: never ask for or infer a postal code. A country or broad region without a city is not enough to prove local availability.
+**How it must be fulfilled.** Maximum budget, country and city, acceptable pickup radius, delivery or pickup deadline.
+
+Ask every open question in one round, each with a sensible default stated, so the user can answer some, all, or "you pick." Skip attributes that would not change the shortlist. A city is sufficient for delivery research: never ask for or infer a postal code. A country or broad region without a city is not enough to prove local availability.
+
+Restate the resulting specification before searching, and carry it into candidate selection: an available product that fails the deciding attributes is not a recommendation.
 
 ## Use Firecrawl
 
@@ -96,7 +96,7 @@ Render the page from the island:
 - repeated checks of one product as a short price and route history;
 - unverified candidates in their own section, never in the recommendation table.
 
-State the run's constraints (need, budget, city, radius, deadline) at the top so the file reads on its own.
+State the run's constraints at the top so the file reads on its own: the deciding attributes with the value agreed for each, then budget, city, radius, and deadline.
 
 ## Refresh a report
 
@@ -106,4 +106,4 @@ Refreshing is research, not a data pull. A new price without a fresh destination
 
 ## Return
 
-Lead with the best verified option: product, price, retailer, fulfillment route, store or destination, availability promise, and checked time. Note meaningful tradeoffs and unverified alternatives separately, and say where the report was saved. Keep the reply short; the report carries the detail.
+Lead with the best verified option: product, price, retailer, fulfillment route, store or destination, availability promise, and checked time. Say in one line how it meets the deciding attributes and where it compromises. Note meaningful tradeoffs and unverified alternatives separately, and say where the report was saved. Keep the reply short; the report carries the detail.

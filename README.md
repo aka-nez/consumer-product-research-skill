@@ -6,7 +6,7 @@ The skill does not treat search snippets, generic “in stock” labels, or unsp
 
 ## What it does
 
-1. Collects the product requirements, budget, country, city, and delivery or pickup deadline.
+1. Works out what actually decides the pick in that category, asks about those attributes plus budget, city, and deadline in one round, and states a default for each.
 2. Uses `firecrawl_search` with the user's city and country to discover retailer pages.
 3. Uses fresh `firecrawl_scrape` requests on exact retailer product pages with caching disabled.
 4. Uses `firecrawl_scrape` actions when a retailer requires a city, variant, delivery, or store selection.
@@ -144,6 +144,7 @@ claude --plugin-dir .
 Behavior cases live under `evals/`:
 
 - `triggering-product-research` checks Firecrawl-backed city-level fulfillment proof;
+- `underspecified-request-questions` checks that a bare category request gets category-deciding questions, not just budget and deadline;
 - `non-triggering-writing-task` checks that unrelated writing does not trigger product research.
 
 Generated eval reports belong under ignored `evals/results/`.
