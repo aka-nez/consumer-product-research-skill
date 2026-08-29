@@ -42,7 +42,7 @@ The only unproven part of the design. Everything downstream branches on the resu
 
 Proven on 2026-08-29, so the probe is no longer open-ended. POST `youtubei/v1/player` with the visionOS client context, then GET the returned track's `baseUrl` with `&fmt=vtt`, yields real cues: verified as two plain HTTP calls and again as in-page `fetch` from a `youtube.com` document, 4017 bytes both times. The Firecrawl HTTP API accepts an `executeJavascript` action and returns `javascriptReturns`, so one scrape call can run that pair.
 
-- [ ] **Step 1: Decide whether to ship the recipe at all.** It spoofs a client against an undocumented endpoint, which is contrary to YouTube's terms, and the official Data API cannot substitute because `captions.download` requires the video owner's authorization. Maintainer's call, recorded in the spec before any code. Declining is a supported outcome: written reviews carry the block.
+- [x] **Step 1: Decide whether to ship the recipe at all.** Decided 2026-08-29: ship it. It spoofs a client against an undocumented endpoint, which is contrary to YouTube's terms, and the official Data API cannot substitute because `captions.download` requires the video owner's authorization.
 
 - [ ] **Step 2: Only if shipping.** Confirm the Firecrawl MCP tool exposes what the HTTP API does: one `firecrawl_scrape` on `https://www.youtube.com/robots.txt` with an `executeJavascript` action, checking that the response carries `javascriptReturns`.
 
@@ -52,7 +52,7 @@ Proven on 2026-08-29, so the probe is no longer open-ended. POST `youtubei/v1/pl
 
 **Verification:** the spec records the maintainer's decision and, if shipping, an observed transcript from a real review video with its credit cost.
 
-**Branch:** declined or MCP does not expose the action → Task 2 implements only the cited-lead path for video. Otherwise Task 2 includes the call shape. Task 3 onward is unchanged either way.
+**Branch:** MCP exposes the action → Task 2 includes the call shape. It does not → try one `firecrawl_scrape` of `https://youtubetotranscript.com/transcript?youtube_url=<url>`, which Firecrawl's default `auto` proxy mode may reach through its enhanced retry at the same one credit; that site's Cloudflare gate held off a stealth-patched headless browser during design probing, so treat a failure as expected. Both unavailable → Task 2 implements only the cited-lead path for video. Task 3 onward is unchanged in every case.
 
 ---
 

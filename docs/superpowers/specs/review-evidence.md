@@ -58,7 +58,7 @@ Measured 2026-08-29 from a server context, one video with published English capt
 | `youtube.com/api/timedtext` direct | `200`, zero bytes |
 | Innertube `youtubei/v1/player`, WEB client | `playabilityStatus: UNPLAYABLE` |
 | `youtubetranscript.com` | returns "YouTube is currently blocking us from fetching subtitles" |
-| `youtubetotranscript.com` | Cloudflare interstitial; also blocks a real headless browser |
+| `youtubetotranscript.com` | Cloudflare interstitial; held off a stealth-patched headless browser here for 30s+ with an empty body |
 | Invidious `api/v1/captions` (`inv.nadeko.net`) | lists tracks including auto-generated, track body zero bytes |
 | Piped `pipedapi.kavin.rocks` | `502` |
 | Signed `baseUrl` scraped from the watch-page HTML, plain GET | `200`, zero bytes, with and without `lang` and `fmt`; deleting its `exp=xpe` breaks the signature and returns `404` |
@@ -83,16 +83,15 @@ firecrawl_scrape(
 
 One unknown remains, and it is narrow: whether the Firecrawl **MCP** tool exposes the `executeJavascript` action and surfaces `javascriptReturns`, as the HTTP API does. That is a single call to settle, and it is what the probe now tests.
 
+If it does not, the documented fallback is `firecrawl_scrape` on `youtubetotranscript.com`, which Firecrawl may reach with the enhanced proxies its default `auto` mode already escalates to, at the same one credit per request. It is second choice on evidence, not on principle: unproven here, four hops instead of two, dependent on a free service that is itself fighting both YouTube and scrapers, and its Cloudflare challenge is an explicit refusal of automated access. A sibling site already answers "YouTube is currently blocking us from fetching subtitles."
+
 ### The compliance question this raises
 
 The working recipe spoofs a client against an undocumented internal endpoint. `yt-dlp` does the same and is widely used, but it is not a supported interface and it is contrary to YouTube's terms. YouTube's official Data API offers no substitute: `captions.download` requires the video owner's authorization, so there is no sanctioned way for a third party to read another channel's transcript.
 
-That is a maintainer's decision, not a technical one, and shipping it in a published plugin is a different act from running it locally. The options:
+That is a maintainer's decision, not a technical one, and shipping it in a published plugin is a different act from running it locally. The options were: ship the recipe and accept an unofficial dependency that breaks whenever YouTube changes the gate; leave it out and let written reviews carry the block; or add a third-party transcript service and a second credential.
 
-1. **Ship it.** Video reviews become first-class evidence. Accept an unofficial dependency that can break whenever YouTube changes the gate, and the terms question with it.
-2. **Leave it out.** Written reviews carry the block, videos are cited as leads with no derived bullets, and the feature has no unofficial surface at all.
-
-Option 2 is the default until the maintainer chooses otherwise. Either way:
+**Decided 2026-08-29: ship the InnerTube recipe.** The client string it pins is a maintenance item, and when YouTube moves the gate the skill degrades to the cited-lead path rather than failing the run. Either way:
 
 - **transcript text available:** derive pros and cons from it, exactly as from an article;
 - **no transcript text:** record the video as a lead with channel, title, date, and link, and derive nothing.
